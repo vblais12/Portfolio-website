@@ -8,9 +8,12 @@ const skills = [
     {name: "JavaScript", level: 100, category: "Languages"},
     {name: "Assembly Language", level: 100, category: "Languages"},
     {name: "Java", level: 100, category: "Languages"},
+    {name: "TypeScript", level: 100, category: "Languages"},
+    {name: "SQL (Postgres)", level:100, category: "Languages"},
 
     {name: "TensorFlow", level: 100, category: "Libraries/Frameworks"},
     {name: "Scikit-learn", level: 100, category: "Libraries/Frameworks"},
+    {name: "HuggingFace", level: 100, category: "Libraries/Frameworks"},
     {name: "Pandas", level: 100, category: "Libraries/Frameworks"},
     {name: "Matplotlib", level: 100, category: "Libraries/Frameworks"},
     {name: "NumPy", level: 100, category: "Libraries/Frameworks"},
@@ -21,11 +24,16 @@ const skills = [
     {name: "Git", level: 100, category: "Developer Tools"},
     {name: "Github", level: 100, category: "Developer Tools"},
     {name: "Jupyter Notebooks", level: 100, category: "Developer Tools"},
-    {name: "Selenium", level: 100, category: "Developer Tools"}
+    {name: "Selenium", level: 100, category: "Developer Tools"},
+
+
+    {name: "Amazon Web Services (AWS)", level: 100, category: "Cloud Platforms"},
+    {name: "Render", level: 100, category: "Cloud Platforms"},
+    {name: "Vercel", level:100, category: 'Cloud Platforms'},
 
 ]
 
-const categories = ['All', 'Languages', 'Libraries/Frameworks', 'Developer Tools']
+const categories = ['All', 'Languages', 'Libraries/Frameworks', 'Developer Tools', 'Cloud Platforms']
 
 
 export const SkillsSection = () => {

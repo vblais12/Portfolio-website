@@ -3,20 +3,20 @@ import { Github, ArrowRight } from "lucide-react"
 const projects = [
     {
         id: 1,
+        title: "Job Market Intelligence Tracker",
+        description: "Analyzes job market trends and in-demand skills using NLP",
+        image: "/projects/JMIT_png.jpg",
+        tags: ["NLP", "FastAPI", "Python", "TypeScript", "PostgreSQL", "AWS"],
+        githubUrl: "https://github.com/vblais12/Job-market-tracker"
+    },
+    {
+        id: 2,
         title: "NHL ML Model",
         description: "NHL game outcome prediction pipeline using machine learning, data scraping, and feature engineering.",
         image: '/projects/NHL.jpg',
         tags: ["Python", "Scikit-learn", "Pandas"],
         githubUrl: "https://github.com/vblais12/NHL_stats_predictor"
     },
-    {
-        id: 2,
-        title: "Job Market Intelligence Tracker",
-        description: "Analyzes job market trends and in-demand skills using NLP",
-        image: "/projects/JMIT_png.jpg",
-        tags: ["NLP", "FastAPI", "Python", "TypeScript", "PostgreSQL", "AWS"],
-        githubUrl: "https://github.com/vblais12/Job-market-tracker"
-    }
 ]
 
 export const ProjectsSection = () => {
