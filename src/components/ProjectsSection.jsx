@@ -8,6 +8,14 @@ const projects = [
         image: '/projects/NHL.jpg',
         tags: ["Python", "Scikit-learn", "Pandas"],
         githubUrl: "https://github.com/vblais12/NHL_stats_predictor"
+    },
+    {
+        id: 2,
+        title: "Job Market Intelligence Tracker",
+        description: "Analyzes job market trends and in-demand skills using NLP",
+        image: "/projects/JMIT_png.jpg",
+        tags: ["NLP", "FastAPI", "Python", "TypeScript", "PostgreSQL", "AWS"],
+        githubUrl: "https://github.com/vblais12/Job-market-tracker"
     }
 ]
 
