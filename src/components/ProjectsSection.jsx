@@ -23,7 +23,7 @@ const projects = [
     },
     {
         id: 3,
-        title: "TAPro",
+        title: "TaPRO",
         description:
             "An AI-powered virtual teaching assistant that supports university office hours for students and professors. Data pipelines store assignments, course materials, and interaction summaries in Supabase for fast retrieval and reuse.",
         image: "/projects/tapro.jpg",
