@@ -1,23 +1,23 @@
-import { Brain, ShieldCheck, Headphones, ArrowRight, FileText } from "lucide-react"
+import { Brain, ShieldCheck, Smartphone, ArrowRight, FileText } from "lucide-react"
 
 const focusAreas = [
     {
         icon: Brain,
         title: "AI / Machine Learning",
         description:
-            "Studying ML architectures and integrating them into real-world software — from data pipelines to model deployment.",
+            "Studying ML architectures and integrating them into real-world software: from data pipelines to model deployment.",
+    },
+    {
+        icon: Smartphone,
+        title: "Mobile App Development",
+        description:
+            "Building responsive, intuitive mobile apps, focused on clean UX and reliable performance across devices.",
     },
     {
         icon: ShieldCheck,
-        title: "Cybersecurity",
+        title: "Cybersecurity Interests",
         description:
             "Exploring security fundamentals through hands-on labs, web vulnerabilities, and secure development practices.",
-    },
-    {
-        icon: Headphones,
-        title: "Beyond Code",
-        description:
-            "Working out, golfing, and following sports — staying balanced keeps me sharp when I'm back at the keyboard.",
     },
 ]
 
@@ -42,8 +42,8 @@ export const AboutSection = () => {
                         <p className="text-muted-foreground leading-relaxed">
                             I build data-driven projects that apply machine
                             learning to meaningful challenges. I care about
-                            shipping things that actually work — not just
-                            notebooks, but deployed, maintainable software.
+                            shipping things that actually work: not just
+                            code, but deployed, maintainable software.
                         </p>
                         <p className="text-muted-foreground leading-relaxed">
                             Driven by a constant desire to learn, I'm committed

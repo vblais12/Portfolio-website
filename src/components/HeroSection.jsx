@@ -16,7 +16,7 @@ export const HeroSection = () => {
                 <div className="lg:col-span-7 text-left space-y-7">
                     <p className="opacity-0 animate-fade-in inline-flex items-center gap-2 text-sm font-medium text-primary border border-primary/30 rounded-full px-4 py-1.5">
                         <span className="h-2 w-2 rounded-full bg-primary animate-pulse-subtle" />
-                        Open to internships — Summer 2026
+                        Open to internships — Fall 2026
                     </p>
 
                     <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05]">
