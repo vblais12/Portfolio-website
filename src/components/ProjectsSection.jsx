@@ -38,7 +38,7 @@ const projects = [
             "Analyzes job-market trends and in-demand skills using NLP, with a FastAPI backend and a TypeScript dashboard.",
         image: "/projects/JMIT_png.jpg",
         tags: ["NLP", "FastAPI", "Python", "TypeScript", "PostgreSQL", "AWS"],
-        githubUrl: "https://github.com/vblais12/Job-market-tracker",
+        githubUrl: "https://github.com/vblais12/job_m_tracker",
         liveUrl: null,
     },
     {
