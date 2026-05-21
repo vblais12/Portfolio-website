@@ -55,7 +55,7 @@ export const AboutSection = () => {
                             <a href="#contact" className="cosmic-button gap-2">
                                 Get in touch <ArrowRight size={16} />
                             </a>
-                            <a href="/resume.pdf" className="ghost-button gap-2">
+                            <a href="/resume.pdf" download className="ghost-button gap-2">
                                 <FileText size={16} /> Download Résumé
                             </a>
                         </div>

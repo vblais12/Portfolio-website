@@ -3,7 +3,7 @@ import { Github, ExternalLink, ArrowRight } from "lucide-react"
 const projects = [
     {
         id: 1,
-        title: "Vektor AI (in progress)",
+        title: "Vektor AI",
         description:
             "An identity-driven AI habit coaching app, live on the App Store. Cross-platform React Native build with personalized onboarding, multi-auth, and a push-notification system with configurable delivery windows.",
         image: "/projects/vektor.jpg",
