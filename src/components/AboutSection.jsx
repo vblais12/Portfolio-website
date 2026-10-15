@@ -1,89 +1,113 @@
-import { Brain, ShieldCheck, Smartphone, ArrowRight, FileText } from "lucide-react"
+import { useEffect, useRef } from "react"
+import { Section } from "@/components/Section"
+import { useFrame } from "@/lib/frameLoop"
+import { useStage } from "@/lib/stage"
 
-const focusAreas = [
+const STATEMENT =
+    "I like problems that come with data attached. Most of my projects start as a question and end as software people actually use. A model in a notebook is a hypothesis. Shipped, it's a product."
+const WORDS = STATEMENT.split(" ")
+
+const FOCUS = [
     {
-        icon: Brain,
-        title: "AI / Machine Learning",
-        description:
-            "Studying ML architectures and integrating them into real-world software: from data pipelines to model deployment.",
+        n: "01",
+        title: "AI & Machine Learning",
+        body: "From data pipelines to deployed models. I study the architectures, then wire them into real products.",
     },
     {
-        icon: Smartphone,
-        title: "Mobile App Development",
-        description:
-            "Building responsive, intuitive mobile apps, focused on clean UX and reliable performance across devices.",
+        n: "02",
+        title: "Mobile apps",
+        body: "Responsive, intuitive apps with clean UX that hold up on every device. One is live on the App Store.",
     },
     {
-        icon: ShieldCheck,
-        title: "Cybersecurity Interests",
-        description:
-            "Exploring security fundamentals through hands-on labs, web vulnerabilities, and secure development practices.",
+        n: "03",
+        title: "Cybersecurity",
+        body: "Hands-on labs, web vulnerabilities, and writing code that's harder to break.",
     },
 ]
 
 export const AboutSection = () => {
+    const { section, go, pointer, sectionStart } = useStage()
+    const active = section === 1
+    const revealRef = useRef(null)
+    const cardsRef = useRef(null)
+
+    // Dim the statement again once we leave, so it re-reveals next time
+    useEffect(() => {
+        if (active) return
+        revealRef.current?.querySelectorAll("[data-w]").forEach((w) => {
+            w.style.opacity = "0.18"
+        })
+    }, [active])
+
+    useFrame((now) => {
+        const rv = revealRef.current
+        if (rv) {
+            const prog = Math.min(1, Math.max(0, (now - sectionStart.current - 350) / 2600))
+            const ws = rv.children
+            const n = ws.length
+            for (let i = 0; i < n; i++) {
+                const a = Math.max(0, Math.min(1, prog * n * 1.15 - i))
+                ws[i].style.opacity = (0.18 + 0.82 * a).toFixed(3)
+                ws[i].style.transform = `translateY(${((1 - a) * 6).toFixed(1)}px)`
+            }
+        }
+
+        // 3D tilt toward the cursor, easing back when it leaves
+        const m = pointer.current
+        cardsRef.current?.querySelectorAll("[data-tilt]").forEach((el) => {
+            const r = el.getBoundingClientRect()
+            const inside = m.x >= r.left && m.x <= r.right && m.y >= r.top && m.y <= r.bottom
+            const rx = inside ? ((m.y - r.top) / r.height - 0.5) * -8 : 0
+            const ry = inside ? ((m.x - r.left) / r.width - 0.5) * 10 : 0
+            el._rx = (el._rx || 0) + (rx - (el._rx || 0)) * 0.1
+            el._ry = (el._ry || 0) + (ry - (el._ry || 0)) * 0.1
+            el.style.transform = `perspective(900px) rotateX(${el._rx.toFixed(2)}deg) rotateY(${el._ry.toFixed(2)}deg)`
+        })
+    }, active)
+
     return (
-        <section id="about" className="py-24 px-4 relative">
-            <div className="container mx-auto max-w-5xl">
-                <div className="mb-14 text-center">
-                    <p className="section-label mb-3">01 — About</p>
-                    <h2 className="text-3xl md:text-4xl font-bold">
-                        A bit about <span className="text-primary">me</span>
-                    </h2>
-                </div>
+        <Section
+            index={1}
+            className="flex flex-col justify-center-safe pt-[100px] pb-[92px] px-[max(24px,calc((100vw-1100px)/2))] gap-[clamp(24px,5vh,56px)] overflow-auto"
+        >
+            <p
+                ref={revealRef}
+                aria-label={STATEMENT}
+                className="m-0 text-[clamp(28px,min(4vw,5.6vh),54px)] leading-[1.12] font-semibold tracking-[-0.035em] text-pretty"
+            >
+                {WORDS.map((w, i) => (
+                    <span key={i} data-w aria-hidden="true" className="text-fg opacity-[.18] inline-block whitespace-pre">
+                        {w}{" "}
+                    </span>
+                ))}
+            </p>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-                    {/* Left: bio */}
-                    <div className="space-y-6">
-                        <h3 className="text-2xl font-semibold">
-                            Analytical problem-solver, focused on real-world
-                            impact.
-                        </h3>
-                        <p className="text-muted-foreground leading-relaxed">
-                            I build data-driven projects that apply machine
-                            learning to meaningful challenges. I care about
-                            shipping things that actually work: not just
-                            code, but deployed, maintainable software.
-                        </p>
-                        <p className="text-muted-foreground leading-relaxed">
-                            Driven by a constant desire to learn, I'm committed
-                            to continuous improvement and staying current in a
-                            fast-moving field.
-                        </p>
-
-                        <div className="flex flex-wrap gap-4 pt-2">
-                            <a href="#contact" className="cosmic-button gap-2">
-                                Get in touch <ArrowRight size={16} />
-                            </a>
-                            <a href="/resume.pdf" download className="ghost-button gap-2">
-                                <FileText size={16} /> Download Résumé
-                            </a>
+            <div ref={cardsRef} className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-4">
+                {FOCUS.map((f) => (
+                    <div key={f.n} data-st>
+                        <div
+                            data-tilt
+                            className="h-full box-border p-[26px] rounded-[26px] glass backdrop-blur-[24px] backdrop-saturate-150 shadow-card flex flex-col gap-2.5 will-change-transform"
+                        >
+                            <span className="text-[13px] text-mut font-medium">{f.n}</span>
+                            <span className="text-[26px] font-bold tracking-[-0.03em] leading-[1.05]">{f.title}</span>
+                            <span className="text-[16px] leading-normal text-mut2">{f.body}</span>
                         </div>
                     </div>
-
-                    {/* Right: focus cards */}
-                    <div className="space-y-4">
-                        {focusAreas.map(({ icon: Icon, title, description }) => (
-                            <div
-                                key={title}
-                                className="card-base card-hover p-6 flex items-start gap-4"
-                            >
-                                <div className="shrink-0 p-3 rounded-lg bg-primary/10">
-                                    <Icon className="h-5 w-5 text-primary" />
-                                </div>
-                                <div className="text-left">
-                                    <h4 className="font-semibold mb-1">
-                                        {title}
-                                    </h4>
-                                    <p className="text-sm text-muted-foreground leading-relaxed">
-                                        {description}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                ))}
             </div>
-        </section>
+
+            <div data-st className="flex gap-[22px] items-center justify-center text-[17px] flex-wrap">
+                <button
+                    onClick={(e) => go(4, e.currentTarget)}
+                    className="cursor-pointer bg-fg text-bg py-[13px] px-6 rounded-full font-medium"
+                >
+                    Get in touch
+                </button>
+                <a href="/resume.pdf" download="Viktor_Blais_Resume.pdf" className="text-acc">
+                    Download résumé ›
+                </a>
+            </div>
+        </Section>
     )
 }

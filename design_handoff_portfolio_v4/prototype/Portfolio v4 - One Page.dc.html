@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#fbfbfd;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+a:hover{color:inherit}
+input::placeholder,textarea::placeholder{color:currentColor;opacity:.4}
+@keyframes dot{50%{opacity:.25}}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" style="--bg:#fbfbfd;--fg:#1d1d1f;--mut:#6e6e73;--mut2:#424245;--glass:rgba(255,255,255,.55);--glass2:rgba(255,255,255,.8);--gb:rgba(255,255,255,.9);--line:rgba(0,0,0,.08);--acc:#0071e3;--card:#ffffff;--shadow:rgba(60,40,140,.22);background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Geist',sans-serif;position:fixed;inset:0;overflow:hidden;transition:background .6s,color .6s">
+
+<canvas ref="{{ auroraRef }}" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;transition:opacity .6s"></canvas>
+<canvas ref="{{ starsRef }}" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></canvas>
+<div ref="{{ orbRef }}" style="position:absolute;left:0;top:0;width:460px;height:460px;margin:-230px 0 0 -230px;border-radius:50%;background:radial-gradient(circle at 38% 34%,rgba(255,255,255,.85),rgba(170,150,255,.5) 18%,rgba(70,110,255,.22) 42%,rgba(0,0,0,0) 70%);mix-blend-mode:screen;pointer-events:none;opacity:0;transition:opacity .6s;will-change:transform"></div>
+<div ref="{{ rippleRef }}" style="position:absolute;left:0;top:0;width:80px;height:80px;margin:-40px 0 0 -40px;border-radius:50%;border:1.5px solid var(--fg);background:radial-gradient(circle,rgba(255,255,255,.0) 55%,rgba(160,140,255,.25) 100%);pointer-events:none;opacity:0;z-index:40;will-change:transform,opacity"></div>
+<div ref="{{ cursorRef }}" style="position:absolute;left:0;top:0;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:1px solid var(--mut);background:rgba(255,255,255,.08);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);pointer-events:none;z-index:60;will-change:transform;transition:width .35s cubic-bezier(.2,.8,.2,1),height .35s cubic-bezier(.2,.8,.2,1),margin .35s cubic-bezier(.2,.8,.2,1),opacity .3s;opacity:0"></div>
+
+<nav style="position:absolute;top:18px;left:0;right:0;margin:0 auto;width:fit-content;max-width:calc(100vw - 24px);box-sizing:border-box;z-index:50;display:flex;align-items:center;gap:4px;padding:6px 6px 6px 20px;border-radius:999px;background:var(--glass);backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6);border:1px solid var(--gb);box-shadow:0 10px 30px -14px var(--shadow);font-size:14px;white-space:nowrap">
+  <button onClick="{{ goHome }}" style="font:inherit;font-size:17px;font-weight:600;letter-spacing:-0.02em;margin-right:12px;background:none;border:none;color:var(--fg);cursor:pointer;padding:0;white-space:nowrap">viktor bl<span data-shimmer="1" style="background:linear-gradient(90deg,#7c3aed,#2563eb,#0d9488,#a855f7,#7c3aed);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent">AI</span>s</button>
+  <div ref="{{ tabsRef }}" style="position:relative;display:flex;gap:2px">
+    <div ref="{{ tabPill }}" style="position:absolute;left:0;top:0;height:100%;border-radius:999px;background:var(--fg);transition:transform .6s cubic-bezier(.3,1.25,.4,1),width .6s cubic-bezier(.3,1.25,.4,1)"></div>
+    <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="5"><button data-tab="{{ tb.i }}" onClick="{{ tb.go }}" style="position:relative;z-index:1;font:inherit;font-weight:500;cursor:pointer;border:none;background:transparent;padding:9px 15px;border-radius:999px;color:{{ tb.color }};transition:color .45s">{{ tb.name }}</button></sc-for>
+  </div>
+  <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:4px;font-size:14px">{{ themeIcon }}</button>
+</nav>
+
+<div ref="{{ counterRef }}" style="position:absolute;left:28px;bottom:22px;z-index:20;display:flex;gap:14px;align-items:center;font-size:12.5px;color:var(--mut)"><span style="font-variant-numeric:tabular-nums;color:var(--fg);font-weight:600">{{ secNum }}</span><span style="width:60px;height:1px;background:var(--line);position:relative;overflow:hidden"><span style="position:absolute;left:0;top:0;bottom:0;width:{{ secPct }}%;background:var(--fg);transition:width .8s cubic-bezier(.2,.8,.2,1)"></span></span><span>05</span></div>
+<div ref="{{ hintRef }}" style="position:absolute;right:28px;bottom:22px;z-index:20;font-size:12.5px;color:var(--mut)">← → or scroll to move between sections</div>
+
+<section data-sec="0" data-screen-label="Home" ref="{{ heroRef }}" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:90px 24px 110px;box-sizing:border-box;gap:clamp(14px,2.6vh,26px);opacity:{{ v0.o }};transform:{{ v0.tf }};filter:blur({{ v0.b }}px);pointer-events:{{ v0.pe }};transition:opacity .7s,transform 1s cubic-bezier(.2,.8,.2,1),filter .7s">
+  <sc-for list="{{ orbs }}" as="o" hint-placeholder-count="3"><div data-orb="{{ o.d }}" style="position:absolute;left:{{ o.x }}%;top:{{ o.y }}%;width:{{ o.s }}px;height:{{ o.s }}px;border-radius:50%;background:radial-gradient(circle at 30% 28%,rgba(255,255,255,.95),rgba(255,255,255,.3) 22%,rgba(255,255,255,.06) 60%,rgba(255,255,255,.22) 100%);box-shadow:inset -8px -12px 30px rgba(120,100,255,.2),inset 6px 8px 18px rgba(255,255,255,.6),0 30px 60px -20px var(--shadow);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);will-change:transform;pointer-events:none;opacity:{{ orbOp }};transition:opacity .6s"></div></sc-for>
+  <div ref="{{ orbitRef }}" style="position:absolute;inset:0;pointer-events:none;z-index:1">
+    <sc-for list="{{ orbit }}" as="o" hint-placeholder-count="10"><span data-orbit="{{ $index }}" style="position:absolute;left:0;top:0;font-size:15px;font-weight:500;letter-spacing:-0.01em;padding:9px 16px;border-radius:999px;background:var(--glass2);border:1px solid var(--gb);white-space:nowrap;will-change:transform,opacity;opacity:0">{{ o }}</span></sc-for>
+  </div>
+  <div data-st="1" style="position:relative;z-index:2"><span style="font-size:14px;font-weight:500;padding:7px 14px;border-radius:999px;background:var(--glass);border:1px solid var(--gb);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;gap:8px;align-items:center"><span style="width:7px;height:7px;border-radius:50%;background:#34c759;animation:dot 2s infinite"></span>Open to internships · Fall 2026</span></div>
+  <h1 ref="{{ nameRef }}" style="position:relative;z-index:2;margin:0;font-size:clamp(64px,min(12vw,18vh),168px);line-height:.95;font-weight:700;letter-spacing:-0.055em;display:flex;flex-wrap:wrap;justify-content:center">
+    <sc-for list="{{ nameChars }}" as="ch" hint-placeholder-count="12"><span style="display:inline-block;white-space:pre;transform:translateY({{ ch.y }}px);opacity:{{ ch.o }};filter:blur({{ ch.b }}px);transition:{{ ch.tr }}"><span data-mag="1" style="display:inline-block;white-space:pre;will-change:transform">{{ ch.c }}</span></span></sc-for>
+  </h1>
+  <p data-st="1" style="position:relative;z-index:2;margin:0;font-size:clamp(26px,min(4.2vw,5.6vh),54px);line-height:1.1;font-weight:600;letter-spacing:-0.035em;color:var(--mut);display:flex;flex-wrap:wrap;justify-content:center;gap:0 .26em">
+    <span>Building software that</span>
+    <span ref="{{ rotBox }}" style="position:relative;display:inline-block;height:1.15em;text-align:left;transition:width .7s cubic-bezier(.2,.8,.2,1)">
+      <sc-for list="{{ rot }}" as="r" hint-placeholder-count="4"><span data-rot="{{ $index }}" style="position:absolute;left:0;top:0;white-space:nowrap;background:linear-gradient(90deg,#7c3aed,#2563eb,#0d9488);-webkit-background-clip:text;background-clip:text;color:transparent;transform:translateY({{ r.y }}em);opacity:{{ r.o }};filter:blur({{ r.b }}px);transition:transform .8s cubic-bezier(.2,.8,.2,1),opacity .8s,filter .8s">{{ r.t }}</span></sc-for>
+    </span>
+  </p>
+  <p data-st="1" style="position:relative;z-index:2;margin:0;font-size:clamp(16px,2.1vh,19px);line-height:1.45;color:var(--mut2)">Computer Science + Math at UBC, based in Vancouver.</p>
+  <div data-st="1" style="position:relative;z-index:2;display:flex;gap:22px;align-items:center;margin-top:8px;font-size:17px;flex-wrap:wrap;justify-content:center"><button onClick="{{ goWork }}" style="font:inherit;cursor:pointer;border:none;background:var(--acc);color:#fff;padding:13px 26px;border-radius:999px;font-weight:500;transition:transform .3s cubic-bezier(.2,.8,.2,1)" style-hover="transform:scale(1.04)">See my work</button><a href="assets/resume.pdf" download="Viktor_Blais_Resume.pdf" style="color:var(--acc)">Download résumé ›</a></div>
+</section>
+
+<section data-sec="1" data-screen-label="About" style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:safe center;padding:100px max(24px,calc((100vw - 1100px)/2)) 92px;box-sizing:border-box;gap:clamp(24px,5vh,56px);overflow:auto;opacity:{{ v1.o }};transform:{{ v1.tf }};filter:blur({{ v1.b }}px);pointer-events:{{ v1.pe }};transition:opacity .7s,transform 1s cubic-bezier(.2,.8,.2,1),filter .7s">
+    <p ref="{{ revealRef }}" style="margin:0;font-size:clamp(28px,min(4vw,5.6vh),54px);line-height:1.12;font-weight:600;letter-spacing:-0.035em;text-wrap:pretty">
+    <sc-for list="{{ aboutWords }}" as="w" hint-placeholder-count="30"><span data-w="1" style="color:var(--fg);opacity:.18;display:inline-block;white-space:pre">{{ w }} </span></sc-for>
+  </p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px">
+    <sc-for list="{{ focus }}" as="f" hint-placeholder-count="3">
+      <div data-st="1"><div data-tilt="1" style="height:100%;box-sizing:border-box;padding:26px 26px;border-radius:26px;background:var(--glass);border:1px solid var(--gb);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);box-shadow:0 20px 50px -30px var(--shadow);display:flex;flex-direction:column;gap:10px;will-change:transform">
+        <span style="font-size:13px;color:var(--mut);font-weight:500">{{ f.n }}</span>
+        <span style="font-size:26px;font-weight:700;letter-spacing:-0.03em;line-height:1.05">{{ f.t }}</span>
+        <span style="font-size:16px;line-height:1.5;color:var(--mut2)">{{ f.d }}</span>
+      </div></div>
+    </sc-for>
+  </div>
+  <div data-st="1" style="display:flex;gap:22px;align-items:center;justify-content:center;font-size:17px;flex-wrap:wrap"><button onClick="{{ goContact }}" style="font:inherit;cursor:pointer;border:none;background:var(--fg);color:var(--bg);padding:13px 24px;border-radius:999px;font-weight:500">Get in touch</button><a href="assets/resume.pdf" download="Viktor_Blais_Resume.pdf" style="color:var(--acc)">Download résumé ›</a></div>
+</section>
+
+<section data-sec="2" data-screen-label="Skills" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:safe center;text-align:center;padding:100px 24px 92px;box-sizing:border-box;gap:clamp(18px,3.4vh,34px);overflow:auto;opacity:{{ v2.o }};transform:{{ v2.tf }};filter:blur({{ v2.b }}px);pointer-events:{{ v2.pe }};transition:opacity .7s,transform 1s cubic-bezier(.2,.8,.2,1),filter .7s">
+    <h2 data-st="1" style="margin:0;font-size:clamp(48px,min(7vw,10vh),96px);font-weight:700;letter-spacing:-0.05em;line-height:.95">The toolkit.</h2>
+  <div data-st="1"><div ref="{{ segRef }}" style="position:relative;display:flex;padding:5px;border-radius:999px;background:var(--glass);border:1px solid var(--gb);backdrop-filter:blur(20px) saturate(1.5);-webkit-backdrop-filter:blur(20px) saturate(1.5);flex-wrap:wrap;justify-content:center">
+    <div ref="{{ segPill }}" style="position:absolute;top:5px;left:0;border-radius:999px;background:var(--fg);transition:transform .6s cubic-bezier(.3,1.25,.4,1),width .6s cubic-bezier(.3,1.25,.4,1);box-shadow:0 6px 18px -8px var(--shadow)"></div>
+    <sc-for list="{{ cats }}" as="c" hint-placeholder-count="5"><button data-seg="{{ c.i }}" onClick="{{ c.pick }}" style="position:relative;z-index:1;font:inherit;font-size:15px;font-weight:500;cursor:pointer;border:none;background:transparent;padding:10px 20px;border-radius:999px;color:{{ c.color }};transition:color .4s">{{ c.name }}</button></sc-for>
+  </div></div>
+  <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:960px;min-height:150px;align-content:flex-start;flex:none">
+    <sc-for list="{{ skills }}" as="s" hint-placeholder-count="12"><span style="font-size:clamp(17px,min(2vw,2.6vh),26px);font-weight:600;letter-spacing:-0.025em;padding:12px 22px;border-radius:999px;background:var(--glass);border:1px solid var(--gb);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);transform:translateY({{ s.y }}px) scale({{ s.sc }});opacity:{{ s.o }};filter:blur({{ s.b }}px);transition:transform .7s cubic-bezier(.2,.9,.25,1.15) {{ s.d }}ms,opacity .5s {{ s.d }}ms,filter .5s {{ s.d }}ms,background .3s" style-hover="background:var(--glass2)">{{ s.n }}</span></sc-for>
+  </div>
+  <span style="font-size:14px;color:var(--mut)">{{ skillCount }}</span>
+</section>
+
+<section data-sec="3" data-screen-label="Work" style="position:absolute;inset:0;display:flex;align-items:safe center;padding:96px max(24px,calc((100vw - 1240px)/2)) 92px;box-sizing:border-box;overflow:auto;opacity:{{ v3.o }};transform:{{ v3.tf }};filter:blur({{ v3.b }}px);pointer-events:{{ v3.pe }};transition:opacity .7s,transform 1s cubic-bezier(.2,.8,.2,1),filter .7s">
+  <div style="width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:clamp(24px,3.5vw,44px);align-items:center">
+    <div style="display:flex;flex-direction:column">
+      <h2 data-st="1" style="margin:0 0 22px;font-size:clamp(40px,min(5vw,7vh),68px);font-weight:700;letter-spacing:-0.05em;line-height:.95">Things I've shipped.</h2>
+      <sc-for list="{{ projects }}" as="p" hint-placeholder-count="5">
+        <div data-st="1"><div onClick="{{ p.pick }}" style="cursor:pointer;padding:clamp(12px,1.9vh,20px) 0;border-top:1px solid var(--line);display:flex;flex-direction:column">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px"><span style="font-size:clamp(24px,min(2.6vw,3.8vh),36px);font-weight:700;letter-spacing:-0.04em;color:{{ p.tc }};transition:color .5s">{{ p.t }}</span><span style="font-size:13px;color:var(--mut);white-space:nowrap">{{ p.k }}</span></div>
+          <div style="display:grid;grid-template-rows:{{ p.rows }};transition:grid-template-rows .7s cubic-bezier(.2,.8,.2,1)"><div style="overflow:hidden;min-height:0">
+            <div style="display:flex;flex-direction:column;gap:12px;padding-top:12px;opacity:{{ p.o }};transform:translateY({{ p.y }}px);transition:opacity .6s .1s,transform .7s .1s cubic-bezier(.2,.8,.2,1)">
+              <p style="margin:0;font-size:16px;line-height:1.5;color:var(--mut2);text-wrap:pretty">{{ p.d }}</p>
+              <div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ p.tags }}" as="tg"><span style="font-size:12.5px;padding:4px 10px;border-radius:999px;background:var(--glass);border:1px solid var(--gb)">{{ tg }}</span></sc-for></div>
+              <div style="display:flex;gap:22px;font-size:15.5px"><sc-for list="{{ p.links }}" as="l"><a href="{{ l.h }}" target="_blank" style="color:var(--acc)">{{ l.t }} ›</a></sc-for></div>
+            </div>
+          </div></div>
+          <div style="height:2px;margin-top:12px;border-radius:2px;background:var(--line);overflow:hidden;opacity:{{ p.barOp }};transition:opacity .4s"><div data-prog="{{ p.i }}" style="height:100%;width:0;background:var(--fg)"></div></div>
+        </div></div>
+      </sc-for>
+    </div>
+
+    <div data-st="1"><div style="position:relative;height:min(600px,calc(100vh - 210px));min-height:400px;border-radius:36px;background:var(--glass);border:1px solid var(--gb);backdrop-filter:blur(30px) saturate(1.5);-webkit-backdrop-filter:blur(30px) saturate(1.5);box-shadow:0 40px 90px -50px var(--shadow);overflow:hidden">
+
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;perspective:1400px;opacity:{{ s0.o }};transform:translateY({{ s0.y }}px) scale({{ s0.s }});filter:blur({{ s0.b }}px);pointer-events:{{ s0.pe }};transition:opacity .8s,transform .9s cubic-bezier(.2,.8,.2,1),filter .8s">
+        <div ref="{{ phoneWrap }}" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;perspective:1400px"><div ref="{{ phoneScale }}" style="transform-origin:center"><div ref="{{ phoneRef }}" style="width:250px;height:520px;border-radius:48px;background:linear-gradient(145deg,#3a3a3c,#1c1c1e);padding:10px;box-sizing:border-box;box-shadow:0 0 0 1px #48484a,0 50px 100px -30px rgba(80,90,200,.45);will-change:transform">
+          <div style="width:100%;height:100%;border-radius:39px;background:#0b0b0d;color:#f5f5f7;overflow:hidden;display:flex;flex-direction:column;padding:52px 18px 0;box-sizing:border-box;gap:18px;position:relative">
+            <div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:88px;height:26px;border-radius:20px;background:#000"></div>
+            <div style="position:absolute;left:8px;right:8px;top:{{ notifTop }}px;z-index:4;background:rgba(50,50,54,.92);border-radius:18px;padding:10px 12px;display:flex;gap:10px;align-items:center;transition:top .7s cubic-bezier(.3,1.3,.5,1)"><img src="assets/vektor.jpg" alt="" style="width:30px;height:30px;border-radius:8px;object-fit:cover"><div style="display:flex;flex-direction:column;font-size:11.5px;line-height:1.3"><b>Vektor</b><span style="opacity:.75">You said you're a runner. Prove it tonight.</span></div></div>
+            <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:#86868b">Tuesday</span><span style="font-size:23px;font-weight:700;letter-spacing:-0.03em;line-height:1.1">I am someone who shows up.</span></div>
+            <div style="align-self:center;position:relative;width:150px;height:150px">
+              <svg width="150" height="150" viewBox="0 0 160 160"><defs><linearGradient id="vg4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a78bfa"></stop><stop offset="1" stop-color="#5eead4"></stop></linearGradient></defs><circle cx="80" cy="80" r="67" fill="none" stroke="#1c1c1e" stroke-width="13"></circle><circle cx="80" cy="80" r="67" fill="none" stroke="url(#vg4)" stroke-width="13" stroke-linecap="round" stroke-dasharray="421" stroke-dashoffset="{{ ring }}" transform="rotate(-90 80 80)" style="transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1)"></circle></svg>
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:36px;font-weight:700;letter-spacing:-0.04em">{{ ringPct }}</span><span style="font-size:12px;color:#86868b">of today</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <sc-for list="{{ habits }}" as="h" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #1c1c1e;font-size:15px"><span style="color:{{ h.c }};transition:color .5s">{{ h.t }}</span><span style="width:22px;height:22px;border-radius:50%;background:{{ h.bg }};border:1.5px solid {{ h.b }};transform:scale({{ h.s }});transition:all .5s cubic-bezier(.3,1.6,.5,1)"></span></div></sc-for>
+            </div>
+          </div>
+        </div></div></div>
+      </div>
+
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:36px;opacity:{{ s1.o }};transform:translateY({{ s1.y }}px) scale({{ s1.s }});filter:blur({{ s1.b }}px);pointer-events:{{ s1.pe }};transition:opacity .8s,transform .9s cubic-bezier(.2,.8,.2,1),filter .8s">
+        <div style="width:100%;border-radius:16px;overflow:hidden;background:var(--card);box-shadow:0 0 0 1px var(--line),0 40px 80px -40px var(--shadow)">
+          <div style="height:34px;display:flex;align-items:center;gap:7px;padding:0 14px;border-bottom:1px solid var(--line)"><span style="width:11px;height:11px;border-radius:50%;background:#ff5f57"></span><span style="width:11px;height:11px;border-radius:50%;background:#febc2e"></span><span style="width:11px;height:11px;border-radius:50%;background:#28c840"></span><span style="margin:0 auto;font-size:12px;color:var(--mut)">folio-prep.com</span></div>
+          <div style="height:min(360px,calc(100vh - 330px));min-height:240px;overflow:hidden;position:relative"><img ref="{{ folioImg }}" src="assets/folioprep.jpg" alt="FolioPrep" style="width:100%;display:block;will-change:transform"><div ref="{{ sheenRef }}" style="position:absolute;top:0;bottom:0;left:0;width:220px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);will-change:transform"></div></div>
+        </div>
+      </div>
+
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:40px;gap:14px;opacity:{{ s2.o }};transform:translateY({{ s2.y }}px) scale({{ s2.s }});filter:blur({{ s2.b }}px);pointer-events:{{ s2.pe }};transition:opacity .8s,transform .9s cubic-bezier(.2,.8,.2,1),filter .8s">
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--mut);padding-bottom:12px;border-bottom:1px solid var(--line)"><span>CPSC 110 · Office hours</span><span style="color:#34c759">● TaPRO online</span></div>
+        <div style="display:flex;flex-direction:column;gap:12px;min-height:280px">
+          <sc-if value="{{ showQ }}" hint-placeholder-val="{{ true }}"><div style="align-self:flex-end;max-width:78%;background:var(--acc);color:#fff;padding:13px 17px;border-radius:22px 22px 6px 22px;font-size:16px;line-height:1.45">Why does my recursion never hit the base case?</div></sc-if>
+          <sc-if value="{{ showTyping }}"><div style="align-self:flex-start;display:flex;gap:5px;padding:15px 17px;border-radius:22px;background:var(--card);box-shadow:0 0 0 1px var(--line)"><span style="width:7px;height:7px;border-radius:50%;background:var(--mut);animation:dot 1s infinite"></span><span style="width:7px;height:7px;border-radius:50%;background:var(--mut);animation:dot 1s .2s infinite"></span><span style="width:7px;height:7px;border-radius:50%;background:var(--mut);animation:dot 1s .4s infinite"></span></div></sc-if>
+          <sc-if value="{{ showA }}"><div style="align-self:flex-start;max-width:86%;background:var(--card);box-shadow:0 0 0 1px var(--line);padding:13px 17px;border-radius:22px 22px 22px 6px;font-size:16px;line-height:1.5">{{ aText }}</div></sc-if>
+        </div>
+      </div>
+
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:44px;gap:22px;opacity:{{ s3.o }};transform:translateY({{ s3.y }}px) scale({{ s3.s }});filter:blur({{ s3.b }}px);pointer-events:{{ s3.pe }};transition:opacity .8s,transform .9s cubic-bezier(.2,.8,.2,1),filter .8s">
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:24px;font-weight:700;letter-spacing:-0.03em">In-demand skills</span><span style="font-size:13px;color:var(--mut)">{{ jmWeek }}</span></div>
+        <div style="position:relative;height:{{ jmH }}px">
+          <sc-for list="{{ jm }}" as="r" hint-placeholder-count="6"><div style="position:absolute;left:0;right:0;top:{{ r.top }}px;height:40px;display:grid;grid-template-columns:90px minmax(0,1fr) 46px;gap:14px;align-items:center;font-size:15px;transition:top .9s cubic-bezier(.3,1.25,.4,1)"><span style="font-weight:600">{{ r.n }}</span><div style="height:12px;border-radius:99px;background:var(--line);overflow:hidden"><div style="height:100%;width:{{ r.v }}%;border-radius:99px;background:{{ r.c }};transition:width .9s cubic-bezier(.3,1.2,.4,1)"></div></div><span style="text-align:right;color:var(--mut)">{{ r.v }}%</span></div></sc-for>
+        </div>
+      </div>
+
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:44px;gap:16px;opacity:{{ s4.o }};transform:translateY({{ s4.y }}px) scale({{ s4.s }});filter:blur({{ s4.b }}px);pointer-events:{{ s4.pe }};transition:opacity .8s,transform .9s cubic-bezier(.2,.8,.2,1),filter .8s">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end"><div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:var(--mut)">VAN vs EDM · Win probability</span><span ref="{{ nhlNum }}" style="font-size:56px;font-weight:700;letter-spacing:-0.05em;line-height:1">50%</span></div><span ref="{{ nhlPer }}" style="font-size:13px;color:var(--mut)">P1</span></div>
+        <canvas ref="{{ nhlRef }}" style="width:100%;height:240px;display:block"></canvas>
+      </div>
+    </div></div>
+  </div>
+</section>
+
+<section data-sec="4" data-screen-label="Contact" style="position:absolute;inset:0;display:flex;align-items:safe center;padding:96px max(24px,calc((100vw - 1140px)/2)) 92px;box-sizing:border-box;overflow:auto;opacity:{{ v4.o }};transform:{{ v4.tf }};filter:blur({{ v4.b }}px);pointer-events:{{ v4.pe }};transition:opacity .7s,transform 1s cubic-bezier(.2,.8,.2,1),filter .7s">
+  <div style="width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:56px;align-items:center">
+    <div style="display:flex;flex-direction:column;gap:22px">
+            <h2 data-st="1" style="margin:0;font-size:clamp(52px,min(7vw,10vh),104px);font-weight:700;letter-spacing:-0.055em;line-height:.95">Let's build<br>something.</h2>
+      <p data-st="1" style="margin:0;font-size:20px;color:var(--mut2);max-width:460px;line-height:1.45">An internship, a collaboration, or just a question. I'll get back to you.</p>
+      <div data-st="1" style="display:flex;flex-direction:column;font-size:16px">
+        <a href="mailto:viktor.blais.tech@gmail.com" style="display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-top:1px solid var(--line);transition:color .25s,padding .35s cubic-bezier(.2,.8,.2,1)" style-hover="color:var(--acc);padding-left:8px"><span style="color:var(--mut)">Email</span>viktor.blais.tech@gmail.com</a>
+        <a href="tel:+17073646441" style="display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-top:1px solid var(--line);transition:color .25s,padding .35s cubic-bezier(.2,.8,.2,1)" style-hover="color:var(--acc);padding-left:8px"><span style="color:var(--mut)">Phone</span>+1 (707) 364-6441</a>
+        <div style="display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-top:1px solid var(--line)"><span style="color:var(--mut)">Location</span>Vancouver, BC</div>
+        <div style="display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><span style="color:var(--mut)">Elsewhere</span><span style="display:flex;gap:18px"><a href="https://github.com/vblais12" target="_blank" style="color:var(--acc)">GitHub ›</a><a href="https://linkedin.com/in/viktor-blais-a957a2378" target="_blank" style="color:var(--acc)">LinkedIn ›</a></span></div>
+      </div>
+    </div>
+    <div data-st="1"><div style="padding:clamp(22px,3vw,32px);border-radius:32px;background:var(--glass);border:1px solid var(--gb);backdrop-filter:blur(30px) saturate(1.5);-webkit-backdrop-filter:blur(30px) saturate(1.5);box-shadow:0 40px 90px -50px var(--shadow)">
+      <sc-if value="{{ notSent }}" hint-placeholder-val="{{ true }}">
+        <form onSubmit="{{ submit }}" style="display:flex;flex-direction:column;gap:12px">
+          <input required="required" name="name" placeholder="Name" style="font:inherit;font-size:17px;color:var(--fg);background:var(--glass2);border:1px solid var(--line);border-radius:16px;padding:15px 18px;outline:none;transition:border-color .3s,box-shadow .3s" style-focus="border-color:var(--acc);box-shadow:0 0 0 4px rgba(0,113,227,.15)">
+          <input required="required" type="email" name="email" placeholder="Email" style="font:inherit;font-size:17px;color:var(--fg);background:var(--glass2);border:1px solid var(--line);border-radius:16px;padding:15px 18px;outline:none;transition:border-color .3s,box-shadow .3s" style-focus="border-color:var(--acc);box-shadow:0 0 0 4px rgba(0,113,227,.15)">
+          <textarea required="required" name="message" rows="5" placeholder="Hi Viktor, I'd like to talk about…" style="font:inherit;font-size:17px;color:var(--fg);background:var(--glass2);border:1px solid var(--line);border-radius:16px;padding:15px 18px;outline:none;resize:none;transition:border-color .3s,box-shadow .3s" style-focus="border-color:var(--acc);box-shadow:0 0 0 4px rgba(0,113,227,.15)"></textarea>
+          <button type="submit" style="font:inherit;font-size:17px;font-weight:500;cursor:pointer;border:none;border-radius:999px;padding:16px;background:var(--acc);color:#fff;transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .3s;opacity:{{ btnOp }}" style-hover="transform:scale(1.015)">{{ btnLabel }}</button>
+        </form>
+      </sc-if>
+      <sc-if value="{{ sent }}">
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:50px 10px">
+          <span style="width:64px;height:64px;border-radius:50%;background:#34c759;color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700">✓</span>
+          <span style="font-size:34px;font-weight:700;letter-spacing:-0.04em">Message sent.</span>
+          <span style="font-size:17px;color:var(--mut2)">Thanks for reaching out. I'll get back to you shortly.</span>
+          <button onClick="{{ reset }}" style="margin-top:6px;font:inherit;font-size:16px;cursor:pointer;border:none;background:transparent;color:var(--acc)">Send another ›</button>
+        </div>
+      </sc-if>
+    </div></div>
+  </div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light'|'dark'&quot;},&quot;darkFx&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;trail&quot;,&quot;stars&quot;,&quot;both&quot;],&quot;default&quot;:&quot;stars&quot;,&quot;tsType&quot;:&quot;'trail'|'stars'|'both'&quot;},&quot;motion&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0.25,&quot;max&quot;:3,&quot;step&quot;:0.25,&quot;default&quot;:1,&quot;tsType&quot;:&quot;number&quot;},&quot;cursor&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const THEMES={light:{"--bg":"#fbfbfd","--fg":"#1d1d1f","--mut":"#6e6e73","--mut2":"#424245","--glass":"rgba(255,255,255,.55)","--glass2":"rgba(255,255,255,.8)","--gb":"rgba(255,255,255,.9)","--line":"rgba(0,0,0,.08)","--acc":"#0071e3","--card":"#ffffff","--shadow":"rgba(60,40,140,.22)"},dark:{"--bg":"#000000","--fg":"#f5f5f7","--mut":"#86868b","--mut2":"#a1a1a6","--glass":"rgba(255,255,255,.06)","--glass2":"rgba(255,255,255,.12)","--gb":"rgba(255,255,255,.12)","--line":"rgba(255,255,255,.1)","--acc":"#2997ff","--card":"#111113","--shadow":"rgba(0,0,0,.8)"}};
+const BLOBS={light:["#b9a7ff","#7fd3ff","#ffc4a3","#9ff0d2","#f0a8ff"],dark:["#4b2fd6","#1747d1","#0a8f84","#7a2ad0","#c23b7d"]};
+const SK={"Languages":["Python","C++","JavaScript","TypeScript","Java","SQL (Postgres)","Assembly"],"Libraries":["TensorFlow","Scikit-learn","HuggingFace","Pandas","NumPy","Matplotlib","Seaborn","React","Tailwind CSS"],"Tools":["Git","GitHub","Jupyter","Selenium"],"Cloud":["AWS","Render","Vercel"]};
+const CATS=["All","Languages","Libraries","Tools","Cloud"];
+const TABS=["Home","About","Skills","Work","Contact"];
+const PROJ=[
+ {t:"Vektor AI",k:"iOS & Android",s:"App Store",d:"An AI habit coach built around identity. You decide who you're becoming and Vektor nudges you there. Personalized onboarding, multi-provider auth, and push notifications with configurable delivery windows.",tags:["React Native","TypeScript","Expo","Supabase"],links:[{t:"vektorai.app",h:"https://www.vektorai.app/"}]},
+ {t:"FolioPrep",k:"Web app",s:"Web app",d:"A college-prep dashboard for high schoolers. Activities, awards, volunteer hours, test scores and essays, mapped to Common App, UC or Coalition. AI profile review flags strengths, gaps and next steps.",tags:["React","AI","Web App"],links:[{t:"folio-prep.com",h:"https://folio-prep.com/"}]},
+ {t:"TaPRO",k:"AI agent",s:"AI agent",d:"An AI teaching assistant for university office hours. Assignments, course materials and conversation summaries live in Supabase, so answers come back fast and in context.",tags:["Gemini API","Next.js","Node.js","Supabase"],links:[{t:"Code",h:"https://github.com/austinluk/ta_pro"},{t:"Watch demo",h:"https://www.youtube.com/watch?v=Qb1FNeKKBsg"}]},
+ {t:"Job Market Tracker",k:"NLP",s:"NLP",d:"Reads job postings and uses NLP to surface which skills are in demand right now. FastAPI backend, TypeScript dashboard, Postgres on AWS.",tags:["NLP","FastAPI","Python","TypeScript","PostgreSQL","AWS"],links:[{t:"Code",h:"https://github.com/vblais12/job_m_tracker"}]},
+ {t:"NHL Predictor",k:"ML pipeline",s:"ML pipeline",d:"Scraping, feature engineering and model training, all to answer one question before puck drop: who wins tonight?",tags:["Python","Scikit-learn","Pandas"],links:[{t:"Code",h:"https://github.com/vblais12/NHL_stats_predictor"}]}];
+const ABOUT="I like problems that come with data attached. Most of my projects start as a question and end as software people actually use. A model in a notebook is a hypothesis. Shipped, it's a product.".split(" ");
+const ROT=["learns.","ships.","scales.","predicts."];
+const HAB=["Morning run","Read 20 pages","Deep work"];
+const ANSWER="Look at the call on line 12. You pass solve(n) instead of solve(n - 1), so n never shrinks. Trace n = 3 by hand and you'll see it.";
+const DUR=7000;
+class Component extends DCLogic{
+  state={dark:(this.props.theme??"light")==="dark",sec:0,prev:0,risen:false,rot:0,cat:"All",shownCat:"All",skIn:true,active:0,tick:0,taStep:0,taChars:0,sent:false,sending:false,jm:[["Python",86],["SQL",72],["AWS",63],["React",55],["Docker",47],["PyTorch",41]],week:41};
+  rootRef=React.createRef();auroraRef=React.createRef();starsRef=React.createRef();orbRef=React.createRef();rippleRef=React.createRef();phoneWrap=React.createRef();phoneScale=React.createRef();hintRef=React.createRef();orbitRef=React.createRef();nameRef=React.createRef();counterRef=React.createRef();cursorRef=React.createRef();tabsRef=React.createRef();tabPill=React.createRef();heroRef=React.createRef();rotBox=React.createRef();revealRef=React.createRef();segRef=React.createRef();segPill=React.createRef();phoneRef=React.createRef();folioImg=React.createRef();sheenRef=React.createRef();nhlRef=React.createRef();nhlNum=React.createRef();nhlPer=React.createRef();
+  mx=-9999;my=-9999;cur={x:0,y:0};orb={x:600,y:400};stir={x:.3,y:.3};surge=0;pSm=0;
+  componentDidMount(){
+    this.onMove=e=>{this.mx=e.clientX;this.my=e.clientY;};window.addEventListener("mousemove",this.onMove);
+    this.onKey=e=>{if(/INPUT|TEXTAREA/.test(document.activeElement?.tagName||""))return;if(e.key==="ArrowRight"||e.key==="ArrowDown")this.go(Math.min(4,this.state.sec+1));if(e.key==="ArrowLeft"||e.key==="ArrowUp")this.go(Math.max(0,this.state.sec-1));};window.addEventListener("keydown",this.onKey);
+    this.onWheel=e=>{const sc=e.target.closest&&e.target.closest("[data-sec]");if(sc&&sc.scrollHeight>sc.clientHeight+4){const atTop=sc.scrollTop<=0,atBot=sc.scrollTop+sc.clientHeight>=sc.scrollHeight-2;if(!((e.deltaY>0&&atBot)||(e.deltaY<0&&atTop)))return;}const n=performance.now();if(Math.abs(e.deltaY)<14||n-(this.lastWheel||0)<1100)return;this.lastWheel=n;this.go(Math.max(0,Math.min(4,this.state.sec+(e.deltaY>0?1:-1))));};window.addEventListener("wheel",this.onWheel,{passive:true});
+    this.onResize=()=>{this._lc=null;this._lr=null;this._ls=null;};window.addEventListener("resize",this.onResize);
+    this.stars=Array.from({length:200},()=>({x:Math.random(),y:Math.random(),z:Math.random(),tw:Math.random()*6.28}));
+    this.blobs=[[.22,.3],[.72,.25],[.55,.72],[.18,.78],[.88,.62]].map(([x,y],i)=>({x,y,ph:i*1.7}));
+    this.t0=performance.now();this.actStart=performance.now();this.secStart=performance.now();this.raf=requestAnimationFrame(this.loop);
+    setTimeout(()=>this.setState({risen:true}),250);
+    this.rotT=setInterval(()=>this.setState(s=>({rot:(s.rot+1)%ROT.length})),2600);
+    this.tickT=setInterval(()=>this.setState(s=>({tick:s.tick+1})),1500);
+    this.jmT=setInterval(()=>this.setState(s=>({week:s.week+1,jm:s.jm.map(([n,v])=>[n,Math.max(18,Math.min(95,Math.round(v+(Math.random()-.5)*26)))])})),2400);
+    this.resetNhl();
+    document.fonts&&document.fonts.ready.then(()=>{this._lc=null;this._lr=null;this._ls=null;});
+  }
+  componentWillUnmount(){cancelAnimationFrame(this.raf);clearInterval(this.rotT);clearInterval(this.tickT);clearInterval(this.jmT);this.clearTa();window.removeEventListener("mousemove",this.onMove);window.removeEventListener("keydown",this.onKey);window.removeEventListener("wheel",this.onWheel);window.removeEventListener("resize",this.onResize);}
+  go(i,fromEl){
+    if(i===this.state.sec)return;
+    const r=this.rootRef.current;if(!r)return;
+    const btn=fromEl||r.querySelector(`[data-tab="${i}"]`);const rp=this.rippleRef.current;
+    if(btn&&rp){const b=btn.getBoundingClientRect();rp.style.left=(b.left+b.width/2)+"px";rp.style.top=(b.top+b.height/2)+"px";rp.style.transition="none";rp.style.opacity="0.7";rp.style.transform="scale(0.2)";void rp.offsetWidth;rp.style.transition="transform 1.3s cubic-bezier(.2,.8,.2,1),opacity 1.3s ease-out";rp.style.transform=`scale(${Math.max(innerWidth,innerHeight)/26})`;rp.style.opacity="0";}
+    this.surge=1;this.secStart=performance.now();
+    this.setState(s=>({prev:s.sec,sec:i}));
+    const sec=r.querySelector(`[data-sec="${i}"]`);
+    if(sec){sec.scrollTop=0;const els=sec.querySelectorAll("[data-st]");els.forEach(el=>{el.style.transition="none";el.style.opacity="0";el.style.transform="translateY(34px)";el.style.filter="blur(10px)";});void sec.offsetWidth;els.forEach((el,k)=>{const d=180+k*70;el.style.transition=`opacity .8s ${d}ms,transform 1s ${d}ms cubic-bezier(.2,.8,.2,1),filter .8s ${d}ms`;el.style.opacity="1";el.style.transform="none";el.style.filter="none";});}
+    if(i===0){this.setState({risen:false});setTimeout(()=>this.setState({risen:true}),80);}if(i===3){this.actStart=performance.now();if(this.state.active===2)this.runTa();}
+    if(i===2)this.pickCat(this.state.cat,true);
+  }
+  homeFx(now,t,M){const hero=this.heroRef.current,nm=this.nameRef.current,ob=this.orbitRef.current;if(!hero||!nm||!ob)return;const hr=hero.getBoundingClientRect(),nr=nm.getBoundingClientRect();const cx=nr.left+nr.width/2-hr.left,cy=nr.top+nr.height/2-hr.top;
+    const mi=this.mx>-9000;const mxn=mi?this.mx/innerWidth-0.5:0,myn=mi?this.my/innerHeight-0.5:0;this.tiltS=this.tiltS||{a:0,b:0};const ta=mi?mxn*2*0.16:-0.06,tb=mi?0.55+myn*0.3:0.55;this.tiltS.a+=(ta-this.tiltS.a)*0.03;this.tiltS.b+=(tb-this.tiltS.b)*0.03;
+    this.orbA=(this.orbA||0)+0.0035*M*(1+this.surge*4);const ent=Math.max(0,Math.min(1,(now-this.secStart-500)/1400));
+    const rx=Math.min(nr.width/2+230,innerWidth*0.48),ry=nr.height*0.55*this.tiltS.b;const ux=e=>{const ks=e.children.length?[...e.children]:[e];let l=1e9,r=-1e9,t=1e9,bb=-1e9;ks.forEach(k=>{const q=k.getBoundingClientRect();if(!q.width)return;l=Math.min(l,q.left);r=Math.max(r,q.right);t=Math.min(t,q.top);bb=Math.max(bb,q.bottom);});return{l:l-hr.left-24,r:r-hr.left+24,t:t-hr.top-12,b:bb-hr.top+12};};if(!this._bk||now-this._bkT>500){this._bkT=now;this._bk=[...hero.querySelectorAll("[data-st]")].map(ux).concat([ux(nm)]);}const blocks=this._bk,rot=this.tiltS.a;const items=ob.querySelectorAll("[data-orbit]"),n=items.length;
+    items.forEach((el,i)=>{const th=this.orbA+i*6.2832/n;const ex=Math.cos(th)*rx,ey=Math.sin(th)*ry;const X=ex*Math.cos(rot)-ey*Math.sin(rot),Y=ex*Math.sin(rot)+ey*Math.cos(rot);const z=(Math.sin(th)+1)/2;const sc=0.72+z*0.38;const px=cx+X,py=cy+Y;const hit=blocks.some(q=>px>q.l&&px<q.r&&py>q.t&&py<q.b);el._f=(el._f??1)+((hit?0.12:1)-(el._f??1))*0.12;el.style.opacity=((0.28+z*0.72)*ent*el._f).toFixed(3);el.style.zIndex=z>0.5?"2":"0";el.style.transform=`translate(${(cx+X-el.offsetWidth/2).toFixed(1)}px,${(cy+Y-el.offsetHeight/2).toFixed(1)}px) scale(${(sc*(0.8+0.2*ent)).toFixed(3)})`;});
+    nm.querySelectorAll("[data-mag]").forEach(el=>{const r=el.getBoundingClientRect();const st=el._m||(el._m={y:0,s:1});const ccx=r.left+r.width/2,ccy=r.top+r.height/2-st.y;const d=mi?Math.hypot(this.mx-ccx,this.my-ccy):999;const f=Math.max(0,1-d/180);const ty=-f*f*18,ts=1+f*0.05;st.y+=(ty-st.y)*0.15;st.s+=(ts-st.s)*0.15;el.style.transform=`translateY(${st.y.toFixed(2)}px) scale(${st.s.toFixed(3)})`;});}
+  applyTheme(){const r=this.rootRef.current;if(!r)return;const k=this.state.dark?"dark":"light",T=THEMES[k];for(const v in T)r.style.setProperty(v,T[v]);document.body.style.background=T["--bg"];this.c={...T,blobs:BLOBS[k],dark:this.state.dark};if(this.orbRef.current)this.orbRef.current.style.opacity="0";}
+  place(container,btn,pill,pad){if(!container||!btn||!pill)return;pill.style.width=btn.offsetWidth+"px";pill.style.height=btn.offsetHeight+"px";pill.style.top=btn.offsetTop+"px";pill.style.transform=`translateX(${btn.offsetLeft}px)`;}
+  sizeRot(){const b=this.rotBox.current;if(!b)return;const el=b.querySelector(`[data-rot="${this.state.rot}"]`);if(el)b.style.width=el.offsetWidth+"px";}
+  pickCat(c,force){if(c===this.state.cat&&!force)return;this.setState({cat:c,skIn:false});clearTimeout(this.skT);this.skT=setTimeout(()=>{this.setState({shownCat:c});requestAnimationFrame(()=>requestAnimationFrame(()=>this.setState({skIn:true})));},force?300:380);}
+  pick(i){this.actStart=performance.now();this.setState({active:i});if(i===2)this.runTa();}
+  clearTa(){(this.taTimers||[]).forEach(clearTimeout);clearInterval(this.streamT);this.taTimers=[];}
+  runTa(){this.clearTa();const T=(ms,f)=>this.taTimers.push(setTimeout(f,ms));this.setState({taStep:0,taChars:0});T(500,()=>this.setState({taStep:1}));T(1300,()=>this.setState({taStep:2}));T(2300,()=>{this.setState({taStep:3});this.streamT=setInterval(()=>this.setState(s=>s.taChars>=ANSWER.length?(clearInterval(this.streamT),{taStep:4}):{taChars:s.taChars+2}),24);});}
+  resetNhl(){const p=[.5];for(let i=1;i<120;i++){let v=p[i-1]+(Math.random()-.47)*.06;if(i%23===0)v+=Math.random()>.4?.14:-.12;p.push(Math.max(.06,Math.min(.94,v)));}this.nhl={p,start:performance.now()};}
+  sz(cv,res){const d=res||Math.min(2,devicePixelRatio||1),w=cv.offsetWidth,h=cv.offsetHeight,W=Math.max(1,Math.round(w*d)),H=Math.max(1,Math.round(h*d));if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;}const x=cv.getContext("2d");x.setTransform(d,0,0,d,0,0);return[x,w,h];}
+  loop=()=>{
+    this.raf=requestAnimationFrame(this.loop);const root=this.rootRef.current;if(!root)return;
+    const S=this.state;
+    if(S.dark!==this._ld){this._ld=S.dark;this.applyTheme();}
+    if(S.cat!==this._lc){const b=this.segRef.current?.querySelector(`[data-seg="${CATS.indexOf(S.cat)}"]`);if(b&&b.offsetWidth){this._lc=S.cat;this.place(this.segRef.current,b,this.segPill.current);}}
+    if(S.sec!==this._ls){const b=this.tabsRef.current?.querySelector(`[data-tab="${S.sec}"]`);if(b&&b.offsetWidth){this._ls=S.sec;this.place(this.tabsRef.current,b,this.tabPill.current);}}
+    {const sm=innerHeight<720;if(this.hintRef.current)this.hintRef.current.style.display=sm?"none":"block";if(this.counterRef.current)this.counterRef.current.style.display=sm?"none":"flex";}if(S.rot!==this._lr){this._lr=S.rot;this.sizeRot();}
+    const c=this.c;if(!c)return;const now=performance.now(),t=(now-this.t0)/1000,M=this.props.motion??1;
+    this.surge*=0.965;const sp=1+this.surge*5;this.tt=(this.tt||0)+(1/60)*M*sp;const T2=this.tt;
+    root.querySelectorAll("[data-shimmer]").forEach(el=>{el.style.backgroundPosition=`${(t*14)%300}% 0`;});
+    this.pSm+=(S.sec/4-this.pSm)*0.04;const p=this.pSm;
+    const av=this.auroraRef.current;
+    if(av){const [x,W,H]=this.sz(av,0.12);x.globalCompositeOperation="source-over";x.fillStyle=c["--bg"];x.fillRect(0,0,W,H);x.globalCompositeOperation=c.dark?"lighter":"source-over";
+      const mi=this.mx>-9000;if(mi){this.stir.x+=(this.mx/innerWidth-this.stir.x)*0.025;this.stir.y+=(this.my/innerHeight-this.stir.y)*0.025;}
+      this.blobs.forEach((b,i)=>{let bx=b.x+Math.sin(T2*0.21+b.ph+p*5)*0.16,by=b.y+Math.cos(T2*0.17+b.ph*1.3+p*6)*0.16;if(i===0&&mi){bx=this.stir.x;by=this.stir.y;}
+        const R=Math.max(W,H)*(0.36+0.06*Math.sin(t*0.5+i)+this.surge*0.08);const X=bx*W,Y=by*H;const col=c.blobs[(i+S.sec)%c.blobs.length];const g=x.createRadialGradient(X,Y,0,X,Y,R);g.addColorStop(0,col+(c.dark?"aa":"d0"));g.addColorStop(1,col+"00");x.fillStyle=g;x.beginPath();x.arc(X,Y,R,0,6.28);x.fill();});
+      av.style.opacity=c.dark?"0.75":"1";}
+    const sv=this.starsRef.current;
+    if(sv){const [x,W,H]=this.sz(sv);x.clearRect(0,0,W,H);
+      const fx=this.props.darkFx??"stars";if(c.dark&&fx!=="trail"){const m={x:this.mx,y:this.my};const pts=this.stars.map(s=>[((s.x-p*s.z*0.25)%1+1)%1*W-(this.mx>-9000?(this.mx-W/2)*s.z*0.02:0),s.y*H,s]);
+        const near=pts.map(q=>[q,Math.hypot(q[0]-m.x,q[1]-m.y)]).filter(a=>a[1]<170).sort((a,b)=>a[1]-b[1]).slice(0,6);
+        near.forEach(([q,d],i)=>{x.strokeStyle=`rgba(200,215,255,${(0.45*(1-d/170)).toFixed(3)})`;x.lineWidth=1;x.beginPath();x.moveTo(m.x,m.y);x.lineTo(q[0],q[1]);x.stroke();if(i){const r=near[i-1][0];x.strokeStyle=`rgba(200,215,255,${(0.18*(1-d/170)).toFixed(3)})`;x.beginPath();x.moveTo(r[0],r[1]);x.lineTo(q[0],q[1]);x.stroke();}});
+        pts.forEach(([px,py,s])=>{const tw=0.45+0.55*Math.sin(t*(1+s.z*2)+s.tw);const n=Math.max(0,1-Math.hypot(px-m.x,py-m.y)/170);x.fillStyle=`rgba(235,240,255,${(0.12+s.z*0.5*tw+n*0.5).toFixed(3)})`;x.beginPath();x.arc(px,py,0.5+s.z*1.2+n,0,6.28);x.fill();});
+        }if(c.dark&&fx!=="stars"){const tr=this.trail||(this.trail=[]);const sp=this.sparks||(this.sparks=[]);if(this.mx>-9000){const l=tr[tr.length-1];const dd=l?Math.hypot(l.x-this.mx,l.y-this.my):99;if(dd>1.5){tr.push({x:this.mx,y:this.my,t:now});if(Math.random()<Math.min(0.9,dd/30))sp.push({x:this.mx,y:this.my,vx:(Math.random()-.5)*1.4,vy:(Math.random()-.5)*1.4-0.3,b:now,h:(t*90)%360});}}while(tr.length&&now-tr[0].t>700)tr.shift();if(tr.length>70)tr.splice(0,tr.length-70);while(sp.length&&now-sp[0].b>1100)sp.shift();if(sp.length>120)sp.splice(0,sp.length-120);x.globalCompositeOperation="lighter";x.lineCap="round";x.lineJoin="round";for(let i=1;i<tr.length;i++){const a=tr[i-1],b=tr[i];const k=i/tr.length;const age=Math.max(0,1-(now-b.t)/700);const hue=(t*90+i*8)%360;x.strokeStyle=`hsla(${hue.toFixed(0)},100%,66%,${(age*0.9).toFixed(3)})`;x.shadowColor=`hsla(${hue.toFixed(0)},100%,60%,${age.toFixed(3)})`;x.shadowBlur=16;x.lineWidth=1+k*7*age;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();}x.shadowBlur=0;sp.forEach(q=>{q.x+=q.vx;q.y+=q.vy;q.vy+=0.02;const a=1-(now-q.b)/1100;x.fillStyle=`hsla(${q.h.toFixed(0)},100%,72%,${(a*0.9).toFixed(3)})`;x.beginPath();x.arc(q.x,q.y,0.6+a*1.8,0,6.28);x.fill();});x.globalCompositeOperation="source-over";}}
+    const cr=this.cursorRef.current;
+    if(cr){if(this.mx>-9000&&(this.props.cursor??false)){this.cur.x+=(this.mx-this.cur.x)*0.2;this.cur.y+=(this.my-this.cur.y)*0.2;if(!this.hc||now-this.hc>80){this.hc=now;const el=document.elementFromPoint(this.mx,this.my);const big=!!(el&&el.closest&&el.closest("a,button,input,textarea,[data-tilt]"));if(big!==this.big){this.big=big;cr.style.width=cr.style.height=big?"58px":"34px";cr.style.margin=big?"-29px 0 0 -29px":"-17px 0 0 -17px";}}cr.style.opacity="1";cr.style.transform=`translate(${this.cur.x.toFixed(1)}px,${this.cur.y.toFixed(1)}px)`;}else cr.style.opacity="0";}
+    if(S.sec===0)this.homeFx(now,t,M);if(S.sec===0){const hero=this.heroRef.current;if(hero)hero.querySelectorAll("[data-orb]").forEach((o,i)=>{const d=+o.dataset.orb;const px=this.mx>-9000?(this.mx-innerWidth/2)*d*0.04:0,py=this.mx>-9000?(this.my-innerHeight/2)*d*0.04:0;o._x=(o._x||0)+(px-(o._x||0))*0.05;o._y=(o._y||0)+(py-(o._y||0))*0.05;o.style.transform=`translate(${o._x.toFixed(1)}px,${(o._y+Math.sin(t*0.8+i*1.9)*14).toFixed(1)}px)`;});}
+    if(S.sec===1){const rv=this.revealRef.current;if(rv){const prog=Math.min(1,Math.max(0,(now-this.secStart-350)/2600));const ws=rv.querySelectorAll("[data-w]");const n=ws.length;ws.forEach((w,i)=>{const a=Math.max(0,Math.min(1,prog*n*1.15-i));w.style.opacity=(0.18+0.82*a).toFixed(3);w.style.transform=`translateY(${((1-a)*6).toFixed(1)}px)`;});}
+      root.querySelectorAll("[data-tilt]").forEach(el=>{const r=el.getBoundingClientRect();const inside=this.mx>=r.left&&this.mx<=r.right&&this.my>=r.top&&this.my<=r.bottom;const rx=inside?((this.my-r.top)/r.height-0.5)*-8:0,ry=inside?((this.mx-r.left)/r.width-0.5)*10:0;el._rx=(el._rx||0)+(rx-(el._rx||0))*0.1;el._ry=(el._ry||0)+(ry-(el._ry||0))*0.1;el.style.transform=`perspective(900px) rotateX(${el._rx.toFixed(2)}deg) rotateY(${el._ry.toFixed(2)}deg)`;});}
+    if(S.sec!==1&&this._lastSec===1){const rv=this.revealRef.current;rv&&rv.querySelectorAll("[data-w]").forEach(w=>{w.style.opacity="0.18";});}
+    this._lastSec=S.sec;
+    if(S.sec===3){const el=now-this.actStart;root.querySelectorAll("[data-prog]").forEach(b=>{b.style.width=(+b.dataset.prog===S.active?Math.min(100,el/DUR*100):0).toFixed(2)+"%";});if(el>DUR)this.pick((S.active+1)%PROJ.length);
+      const pw=this.phoneWrap.current,psc=this.phoneScale.current;if(pw&&psc){const z=Math.min(1,(pw.offsetHeight-50)/534);psc.style.transform=`scale(${z.toFixed(3)})`;}const ph=this.phoneRef.current;if(ph){const r=ph.getBoundingClientRect();const ry=Math.max(-1,Math.min(1,(this.mx-(r.left+r.width/2))/innerWidth*2))*16,rx=Math.max(-1,Math.min(1,(this.my-(r.top+r.height/2))/innerHeight*2))*-10;ph._x=(ph._x||0)+(rx-(ph._x||0))*0.06;ph._y=(ph._y||0)+(ry-(ph._y||0))*0.06;ph.style.transform=`rotateX(${ph._x.toFixed(2)}deg) rotateY(${ph._y.toFixed(2)}deg) translateY(${(Math.sin(t*1.1)*7).toFixed(1)}px)`;}
+      const fi=this.folioImg.current;if(fi&&fi.naturalHeight){const over=Math.max(0,fi.offsetHeight-fi.parentElement.offsetHeight);fi.style.transform=`translateY(${(-(0.5-0.5*Math.cos(t*0.4))*over).toFixed(1)}px)`;}
+      if(this.sheenRef.current)this.sheenRef.current.style.transform=`translateX(${(((t*0.35)%1.6)*1100-260).toFixed(0)}px)`;
+      const nc=this.nhlRef.current;
+      if(nc&&S.active===4){const [x,W,H]=this.sz(nc);x.clearRect(0,0,W,H);const P=this.nhl.p,e=(now-this.nhl.start)/1000,pr=Math.min(1,e/8);if(e>11)this.resetNhl();
+        x.strokeStyle=c["--line"];x.lineWidth=1;[.25,.5,.75].forEach(g=>{x.beginPath();x.moveTo(0,H*g);x.lineTo(W,H*g);x.stroke();});
+        const n=Math.max(2,Math.floor(pr*(P.length-1))+1);const path=()=>{x.beginPath();for(let i=0;i<n;i++){const px=i/(P.length-1)*W,py=H*(1-P[i]);i?x.lineTo(px,py):x.moveTo(px,py);}};
+        const gr=x.createLinearGradient(0,0,W,0);gr.addColorStop(0,"#7c3aed");gr.addColorStop(.5,"#2563eb");gr.addColorStop(1,"#0d9488");
+        const lx=(n-1)/(P.length-1)*W,ly=H*(1-P[n-1]);path();x.lineTo(lx,H);x.lineTo(0,H);x.closePath();const fg=x.createLinearGradient(0,0,0,H);fg.addColorStop(0,"rgba(37,99,235,.22)");fg.addColorStop(1,"rgba(37,99,235,0)");x.fillStyle=fg;x.fill();
+        path();x.strokeStyle=gr;x.lineWidth=3;x.lineJoin="round";x.stroke();x.fillStyle="#2563eb";x.beginPath();x.arc(lx,ly,5,0,6.28);x.fill();x.globalAlpha=.25;x.beginPath();x.arc(lx,ly,12+Math.sin(t*4)*3,0,6.28);x.fill();x.globalAlpha=1;
+        if(this.nhlNum.current)this.nhlNum.current.textContent="VAN "+Math.round(P[n-1]*100)+"%";if(this.nhlPer.current)this.nhlPer.current.textContent=pr>=1?"Final":"Period "+Math.min(3,Math.floor(pr*3)+1);}}
+  };
+  renderVals(){
+    const s=this.state,A=s.active;
+    const vs=i=>{if(i===s.sec)return{o:1,tf:"none",b:0,pe:"auto"};const dir=i<s.sec?-1:1;const wasPrev=i===s.prev;return{o:0,tf:`translateX(${dir*(wasPrev?60:30)}px) scale(${wasPrev?0.94:0.97})`,b:wasPrev?16:10,pe:"none"};};
+    const list=s.shownCat==="All"?Object.values(SK).flat():SK[s.shownCat];
+    const st=i=>i===A?{o:1,y:0,s:1,b:0,pe:"auto"}:{o:0,y:i<A?-40:40,s:.94,b:12,pe:"none"};
+    const phase=s.tick%5,done=Math.min(3,phase),pct=.18+done*.273;
+    const sorted=[...s.jm].sort((a,b)=>b[1]-a[1]);
+    const go=i=>e=>this.go(i,e&&e.currentTarget);
+    return{rootRef:this.rootRef,auroraRef:this.auroraRef,starsRef:this.starsRef,orbRef:this.orbRef,rippleRef:this.rippleRef,cursorRef:this.cursorRef,tabsRef:this.tabsRef,tabPill:this.tabPill,heroRef:this.heroRef,rotBox:this.rotBox,revealRef:this.revealRef,segRef:this.segRef,segPill:this.segPill,phoneRef:this.phoneRef,phoneWrap:this.phoneWrap,phoneScale:this.phoneScale,hintRef:this.hintRef,orbitRef:this.orbitRef,nameRef:this.nameRef,counterRef:this.counterRef,folioImg:this.folioImg,sheenRef:this.sheenRef,nhlRef:this.nhlRef,nhlNum:this.nhlNum,nhlPer:this.nhlPer,
+      themeIcon:s.dark?"☀":"☾",toggleTheme:()=>this.setState(x=>({dark:!x.dark})),
+      tabs:TABS.map((name,i)=>({name,i,go:go(i),color:s.sec===i?"var(--bg)":"var(--mut2)"})),
+      goHome:go(0),goWork:go(3),goContact:go(4),
+      secNum:"0"+(s.sec+1),secPct:(s.sec+1)*20,
+      v0:vs(0),v1:vs(1),v2:vs(2),v3:vs(3),v4:vs(4),
+      orbs:[{x:9,y:18,s:110,d:1.4},{x:85,y:60,s:140,d:0.9},{x:14,y:72,s:60,d:2.6}],orbOp:s.dark?0.35:1,
+      nameChars:"Viktor Blais.".split("").map((c,i)=>({c,y:s.risen?0:90,o:s.risen?1:0,b:s.risen?0:14,tr:s.risen?`transform 1.2s cubic-bezier(.2,.8,.2,1) ${i*55}ms,opacity 1.2s ${i*55}ms,filter 1.2s ${i*55}ms`:"none"})),orbit:["Python","PyTorch","React","TypeScript","AWS","C++","Supabase","Next.js","PostgreSQL","TensorFlow"],
+      rot:ROT.map((t,i)=>({t,y:i===s.rot?0:(i===(s.rot+ROT.length-1)%ROT.length?-1:1),o:i===s.rot?1:0,b:i===s.rot?0:8})),
+      chips:PROJ.map((p,i)=>({t:p.t,s:p.s,go:e=>{this.setState({active:i});this.go(3,e&&e.currentTarget);this.actStart=performance.now();if(i===2)this.runTa();}})),
+      aboutWords:ABOUT,
+      focus:[{n:"01",t:"AI & Machine Learning",d:"From data pipelines to deployed models. I study the architectures, then wire them into real products."},{n:"02",t:"Mobile apps",d:"Responsive, intuitive apps with clean UX that hold up on every device. One is live on the App Store."},{n:"03",t:"Cybersecurity",d:"Hands-on labs, web vulnerabilities, and writing code that's harder to break."}],
+      cats:CATS.map((name,i)=>({name,i,pick:()=>this.pickCat(name),color:s.cat===name?"var(--bg)":"var(--fg)"})),
+      skills:list.map((n,i)=>({n,y:s.skIn?0:24,sc:s.skIn?1:.9,o:s.skIn?1:0,b:s.skIn?0:8,d:s.skIn?i*35:i*12})),
+      skillCount:list.length+(s.shownCat==="All"?" tools across 4 categories":" in "+s.shownCat),
+      projects:PROJ.map((p,i)=>({...p,i,pick:()=>this.pick(i),tc:i===A?"var(--fg)":"var(--mut)",rows:i===A?"1fr":"0fr",o:i===A?1:0,y:i===A?0:-10,barOp:i===A?1:0})),
+      s0:st(0),s1:st(1),s2:st(2),s3:st(3),s4:st(4),phoneZoom:1,
+      ring:(421*(1-pct)).toFixed(1),ringPct:Math.round(pct*100)+"%",notifTop:phase===4?44:-90,
+      habits:HAB.map((t,i)=>{const on=i<done;return{t,c:on?"#86868b":"#f5f5f7",bg:on?"#5eead4":"transparent",b:on?"#5eead4":"#48484a",s:on?1:.85};}),
+      showQ:s.taStep>=1,showTyping:s.taStep===2,showA:s.taStep>=3,aText:ANSWER.slice(0,s.taChars),
+      jm:s.jm.map(([n,v])=>{const r=sorted.findIndex(q=>q[0]===n);return{n,v,top:r*52,c:r===0?"linear-gradient(90deg,#7c3aed,#2563eb)":"var(--mut)"};}),jmH:s.jm.length*52,jmWeek:"Week "+s.week,
+      notSent:!s.sent,sent:s.sent,btnLabel:s.sending?"Sending…":"Send message",btnOp:s.sending?.6:1,
+      submit:e=>{e.preventDefault();this.setState({sending:true});setTimeout(()=>this.setState({sending:false,sent:true}),1300);},
+      reset:()=>this.setState({sent:false})};
+  }
+}
+</script>
+</body>
+</html>

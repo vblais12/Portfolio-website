@@ -8,7 +8,16 @@
       name="description"
       content="Viktor Blais — Computer Science & Math student at UBC building data-driven software and applying machine learning to real-world problems."
     />
-    <meta name="theme-color" content="#0c0e12" />
+    <meta name="theme-color" content="#fbfbfd" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Figtree:wght@500;600;700;800;900&family=Hanken+Grotesk:wght@400;600;700;800&family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@500&display=swap" rel="stylesheet" />
+    <script>
+      // Apply a saved theme before first paint so dark mode doesn't flash light
+      try {
+        if (localStorage.getItem("theme") === "dark") document.documentElement.dataset.theme = "dark"
+      } catch (e) {}
+    </script>
     <meta property="og:title" content="Viktor Blais — Portfolio" />
     <meta
       property="og:description"

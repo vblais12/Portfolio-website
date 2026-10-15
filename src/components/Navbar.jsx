@@ -1,121 +1,68 @@
-import { cn } from "@/lib/utils"
-import { useState, useEffect } from "react"
-import { Menu, X } from "lucide-react"
+import { useRef } from "react"
+import { useFrame } from "@/lib/frameLoop"
+import { useSlidingPill } from "@/hooks/useSlidingPill"
+import { SECTIONS, SPRING, useStage } from "@/lib/stage"
 
-const navItems = [
-    { name: "Home", href: "#hero", id: "hero" },
-    { name: "About", href: "#about", id: "about" },
-    { name: "Skills", href: "#skills", id: "skills" },
-    { name: "Projects", href: "#projects", id: "projects" },
-    { name: "Contact", href: "#contact", id: "contact" },
-]
+export const Navbar = ({ onToggleTheme }) => {
+    const { section, go, theme } = useStage()
+    const tabsRef = useRef(null)
+    const pillRef = useRef(null)
+    const shimmerRef = useRef(null)
 
-export const Navbar = () => {
-    const [isScrolled, setIsScrolled] = useState(false)
-    const [isMenuOpen, setIsMenuOpen] = useState(false)
-    const [activeSection, setActiveSection] = useState("hero")
+    useSlidingPill(tabsRef, pillRef, `[data-tab="${section}"]`)
 
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 10)
-
-            const offset = window.scrollY + 120
-            for (const item of [...navItems].reverse()) {
-                const el = document.getElementById(item.id)
-                if (el && el.offsetTop <= offset) {
-                    setActiveSection(item.id)
-                    break
-                }
-            }
-        }
-
-        handleScroll()
-        window.addEventListener("scroll", handleScroll)
-        return () => window.removeEventListener("scroll", handleScroll)
-    }, [])
+    // Slow scroll of the brand gradient through the "AI"
+    useFrame((now, t) => {
+        if (shimmerRef.current) shimmerRef.current.style.backgroundPosition = `${(t * 14) % 300}% 0`
+    })
 
     return (
-        <nav
-            className={cn(
-                "fixed w-full z-50 transition-all duration-300",
-                isScrolled
-                    ? "py-3 bg-background/80 backdrop-blur-md border-b border-border"
-                    : "py-5 border-b border-transparent"
-            )}
-        >
-            <div className="container flex items-center justify-between">
-                <a
-                    href="#hero"
-                    className="font-bold text-lg flex items-center gap-2"
+        <nav className="absolute top-[18px] inset-x-0 mx-auto w-fit max-w-[calc(100vw-24px)] box-border z-50 flex items-center gap-1 py-1.5 pr-1.5 pl-5 max-sm:pl-1.5 rounded-full glass backdrop-blur-[24px] backdrop-saturate-[1.6] shadow-nav text-[14px] max-sm:text-[13px] whitespace-nowrap overflow-x-auto [scrollbar-width:none]">
+            <button
+                onClick={(e) => go(0, e.currentTarget)}
+                className="text-[17px] font-semibold tracking-[-0.02em] mr-3 text-fg cursor-pointer whitespace-nowrap max-sm:hidden"
+            >
+                viktor bl
+                <span
+                    ref={shimmerRef}
+                    className="bg-clip-text text-transparent"
+                    style={{
+                        backgroundImage: "linear-gradient(90deg,#7c3aed,#2563eb,#0d9488,#a855f7,#7c3aed)",
+                        backgroundSize: "300% 100%",
+                    }}
                 >
-                    <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary text-primary-foreground font-mono text-sm">
-                        VB
-                    </span>
-                    <span className="text-foreground">Viktor Blais</span>
-                </a>
+                    AI
+                </span>
+                s
+            </button>
 
-                {/* Desktop */}
-                <div className="hidden md:flex items-center gap-1">
-                    {navItems.map((item) => (
-                        <a
-                            key={item.id}
-                            href={item.href}
-                            className={cn(
-                                "px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200",
-                                activeSection === item.id
-                                    ? "text-primary"
-                                    : "text-muted-foreground hover:text-foreground"
-                            )}
-                        >
-                            {item.name}
-                        </a>
-                    ))}
-                    <a
-                        href="#contact"
-                        className="ml-2 px-4 py-1.5 rounded-md text-sm font-semibold border border-primary/40 text-primary hover:bg-primary/10 transition-colors"
-                    >
-                        Let's talk
-                    </a>
-                </div>
-
-                {/* Mobile toggle */}
-                <button
-                    onClick={() => setIsMenuOpen((prev) => !prev)}
-                    className="md:hidden p-2 text-foreground z-50"
-                    aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-                >
-                    {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                </button>
-
-                {/* Mobile menu */}
+            <div ref={tabsRef} className="relative flex gap-0.5">
                 <div
-                    className={cn(
-                        "fixed inset-0 bg-background/95 backdrop-blur-md z-40 flex flex-col items-center justify-center",
-                        "transition-all duration-300 md:hidden",
-                        isMenuOpen
-                            ? "opacity-100 pointer-events-auto"
-                            : "opacity-0 pointer-events-none"
-                    )}
-                >
-                    <div className="flex flex-col items-center space-y-8 text-xl">
-                        {navItems.map((item) => (
-                            <a
-                                key={item.id}
-                                href={item.href}
-                                className={cn(
-                                    "transition-colors duration-200",
-                                    activeSection === item.id
-                                        ? "text-primary"
-                                        : "text-foreground/80 hover:text-primary"
-                                )}
-                                onClick={() => setIsMenuOpen(false)}
-                            >
-                                {item.name}
-                            </a>
-                        ))}
-                    </div>
-                </div>
+                    ref={pillRef}
+                    className="absolute left-0 top-0 h-full rounded-full bg-fg"
+                    style={{ transition: `transform .6s ${SPRING}, width .6s ${SPRING}` }}
+                />
+                {SECTIONS.map((name, i) => (
+                    <button
+                        key={name}
+                        data-tab={i}
+                        onClick={(e) => go(i, e.currentTarget)}
+                        aria-current={section === i ? "page" : undefined}
+                        className="relative z-1 font-medium cursor-pointer px-[15px] max-sm:px-2.5 py-[9px] rounded-full"
+                        style={{ color: section === i ? "var(--bg)" : "var(--mut2)", transition: "color .45s" }}
+                    >
+                        {name}
+                    </button>
+                ))}
             </div>
+
+            <button
+                onClick={onToggleTheme}
+                aria-label="Toggle theme"
+                className="w-9 h-9 shrink-0 rounded-full border border-line text-fg cursor-pointer flex items-center justify-center ml-1 text-[14px]"
+            >
+                {theme === "dark" ? "☀" : "☾"}
+            </button>
         </nav>
     )
 }

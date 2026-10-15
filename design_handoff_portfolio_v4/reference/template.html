@@ -1,0 +1,179 @@
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#fbfbfd;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+a:hover{color:inherit}
+input::placeholder,textarea::placeholder{color:currentColor;opacity:.4}
+@keyframes dot{50%{opacity:.25}}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" style="--bg:#fbfbfd;--fg:#1d1d1f;--mut:#6e6e73;--mut2:#424245;--glass:rgba(255,255,255,.55);--glass2:rgba(255,255,255,.8);--gb:rgba(255,255,255,.9);--line:rgba(0,0,0,.08);--acc:#0071e3;--card:#ffffff;--shadow:rgba(60,40,140,.22);background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Geist',sans-serif;position:fixed;inset:0;overflow:hidden;transition:background .6s,color .6s">
+
+<canvas ref="{{ auroraRef }}" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;transition:opacity .6s"></canvas>
+<canvas ref="{{ starsRef }}" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></canvas>
+<div ref="{{ orbRef }}" style="position:absolute;left:0;top:0;width:460px;height:460px;margin:-230px 0 0 -230px;border-radius:50%;background:radial-gradient(circle at 38% 34%,rgba(255,255,255,.85),rgba(170,150,255,.5) 18%,rgba(70,110,255,.22) 42%,rgba(0,0,0,0) 70%);mix-blend-mode:screen;pointer-events:none;opacity:0;transition:opacity .6s;will-change:transform"></div>
+<div ref="{{ rippleRef }}" style="position:absolute;left:0;top:0;width:80px;height:80px;margin:-40px 0 0 -40px;border-radius:50%;border:1.5px solid var(--fg);background:radial-gradient(circle,rgba(255,255,255,.0) 55%,rgba(160,140,255,.25) 100%);pointer-events:none;opacity:0;z-index:40;will-change:transform,opacity"></div>
+<div ref="{{ cursorRef }}" style="position:absolute;left:0;top:0;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:1px solid var(--mut);background:rgba(255,255,255,.08);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);pointer-events:none;z-index:60;will-change:transform;transition:width .35s cubic-bezier(.2,.8,.2,1),height .35s cubic-bezier(.2,.8,.2,1),margin .35s cubic-bezier(.2,.8,.2,1),opacity .3s;opacity:0"></div>
+
+<nav style="position:absolute;top:18px;left:0;right:0;margin:0 auto;width:fit-content;max-width:calc(100vw - 24px);box-sizing:border-box;z-index:50;display:flex;align-items:center;gap:4px;padding:6px 6px 6px 20px;border-radius:999px;background:var(--glass);backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6);border:1px solid var(--gb);box-shadow:0 10px 30px -14px var(--shadow);font-size:14px;white-space:nowrap">
+  <button onClick="{{ goHome }}" style="font:inherit;font-size:17px;font-weight:600;letter-spacing:-0.02em;margin-right:12px;background:none;border:none;color:var(--fg);cursor:pointer;padding:0;white-space:nowrap">viktor bl<span data-shimmer="1" style="background:linear-gradient(90deg,#7c3aed,#2563eb,#0d9488,#a855f7,#7c3aed);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent">AI</span>s</button>
+  <div ref="{{ tabsRef }}" style="position:relative;display:flex;gap:2px">
+    <div ref="{{ tabPill }}" style="position:absolute;left:0;top:0;height:100%;border-radius:999px;background:var(--fg);transition:transform .6s cubic-bezier(.3,1.25,.4,1),width .6s cubic-bezier(.3,1.25,.4,1)"></div>
+    <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="5"><button data-tab="{{ tb.i }}" onClick="{{ tb.go }}" style="position:relative;z-index:1;font:inherit;font-weight:500;cursor:pointer;border:none;background:transparent;padding:9px 15px;border-radius:999px;color:{{ tb.color }};transition:color .45s">{{ tb.name }}</button></sc-for>
+  </div>
+  <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:4px;font-size:14px">{{ themeIcon }}</button>
+</nav>
+
+<div ref="{{ counterRef }}" style="position:absolute;left:28px;bottom:22px;z-index:20;display:flex;gap:14px;align-items:center;font-size:12.5px;color:var(--mut)"><span style="font-variant-numeric:tabular-nums;color:var(--fg);font-weight:600">{{ secNum }}</span><span style="width:60px;height:1px;background:var(--line);position:relative;overflow:hidden"><span style="position:absolute;left:0;top:0;bottom:0;width:{{ secPct }}%;background:var(--fg);transition:width .8s cubic-bezier(.2,.8,.2,1)"></span></span><span>05</span></div>
+<div ref="{{ hintRef }}" style="position:absolute;right:28px;bottom:22px;z-index:20;font-size:12.5px;color:var(--mut)">← → or scroll to move between sections</div>
+
+<section data-sec="0" data-screen-label="Home" ref="{{ heroRef }}" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:90px 24px 110px;box-sizing:border-box;gap:clamp(14px,2.6vh,26px);opacity:{{ v0.o }};transform:{{ v0.tf }};filter:blur({{ v0.b }}px);pointer-events:{{ v0.pe }};transition:opacity .7s,transform 1s cubic-bezier(.2,.8,.2,1),filter .7s">
+  <sc-for list="{{ orbs }}" as="o" hint-placeholder-count="3"><div data-orb="{{ o.d }}" style="position:absolute;left:{{ o.x }}%;top:{{ o.y }}%;width:{{ o.s }}px;height:{{ o.s }}px;border-radius:50%;background:radial-gradient(circle at 30% 28%,rgba(255,255,255,.95),rgba(255,255,255,.3) 22%,rgba(255,255,255,.06) 60%,rgba(255,255,255,.22) 100%);box-shadow:inset -8px -12px 30px rgba(120,100,255,.2),inset 6px 8px 18px rgba(255,255,255,.6),0 30px 60px -20px var(--shadow);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);will-change:transform;pointer-events:none;opacity:{{ orbOp }};transition:opacity .6s"></div></sc-for>
+  <div ref="{{ orbitRef }}" style="position:absolute;inset:0;pointer-events:none;z-index:1">
+    <sc-for list="{{ orbit }}" as="o" hint-placeholder-count="10"><span data-orbit="{{ $index }}" style="position:absolute;left:0;top:0;font-size:15px;font-weight:500;letter-spacing:-0.01em;padding:9px 16px;border-radius:999px;background:var(--glass2);border:1px solid var(--gb);white-space:nowrap;will-change:transform,opacity;opacity:0">{{ o }}</span></sc-for>
+  </div>
+  <div data-st="1" style="position:relative;z-index:2"><span style="font-size:14px;font-weight:500;padding:7px 14px;border-radius:999px;background:var(--glass);border:1px solid var(--gb);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;gap:8px;align-items:center"><span style="width:7px;height:7px;border-radius:50%;background:#34c759;animation:dot 2s infinite"></span>Open to internships · Fall 2026</span></div>
+  <h1 ref="{{ nameRef }}" style="position:relative;z-index:2;margin:0;font-size:clamp(64px,min(12vw,18vh),168px);line-height:.95;font-weight:700;letter-spacing:-0.055em;display:flex;flex-wrap:wrap;justify-content:center">
+    <sc-for list="{{ nameChars }}" as="ch" hint-placeholder-count="12"><span style="display:inline-block;white-space:pre;transform:translateY({{ ch.y }}px);opacity:{{ ch.o }};filter:blur({{ ch.b }}px);transition:{{ ch.tr }}"><span data-mag="1" style="display:inline-block;white-space:pre;will-change:transform">{{ ch.c }}</span></span></sc-for>
+  </h1>
+  <p data-st="1" style="position:relative;z-index:2;margin:0;font-size:clamp(26px,min(4.2vw,5.6vh),54px);line-height:1.1;font-weight:600;letter-spacing:-0.035em;color:var(--mut);display:flex;flex-wrap:wrap;justify-content:center;gap:0 .26em">
+    <span>Building software that</span>
+    <span ref="{{ rotBox }}" style="position:relative;display:inline-block;height:1.15em;text-align:left;transition:width .7s cubic-bezier(.2,.8,.2,1)">
+      <sc-for list="{{ rot }}" as="r" hint-placeholder-count="4"><span data-rot="{{ $index }}" style="position:absolute;left:0;top:0;white-space:nowrap;background:linear-gradient(90deg,#7c3aed,#2563eb,#0d9488);-webkit-background-clip:text;background-clip:text;color:transparent;transform:translateY({{ r.y }}em);opacity:{{ r.o }};filter:blur({{ r.b }}px);transition:transform .8s cubic-bezier(.2,.8,.2,1),opacity .8s,filter .8s">{{ r.t }}</span></sc-for>
+    </span>
+  </p>
+  <p data-st="1" style="position:relative;z-index:2;margin:0;font-size:clamp(16px,2.1vh,19px);line-height:1.45;color:var(--mut2)">Computer Science + Math at UBC, based in Vancouver.</p>
+  <div data-st="1" style="position:relative;z-index:2;display:flex;gap:22px;align-items:center;margin-top:8px;font-size:17px;flex-wrap:wrap;justify-content:center"><button onClick="{{ goWork }}" style="font:inherit;cursor:pointer;border:none;background:var(--acc);color:#fff;padding:13px 26px;border-radius:999px;font-weight:500;transition:transform .3s cubic-bezier(.2,.8,.2,1)" style-hover="transform:scale(1.04)">See my work</button><a href="assets/resume.pdf" download="Viktor_Blais_Resume.pdf" style="color:var(--acc)">Download résumé ›</a></div>
+</section>
+
+<section data-sec="1" data-screen-label="About" style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:safe center;padding:100px max(24px,calc((100vw - 1100px)/2)) 92px;box-sizing:border-box;gap:clamp(24px,5vh,56px);overflow:auto;opacity:{{ v1.o }};transform:{{ v1.tf }};filter:blur({{ v1.b }}px);pointer-events:{{ v1.pe }};transition:opacity .7s,transform 1s cubic-bezier(.2,.8,.2,1),filter .7s">
+    <p ref="{{ revealRef }}" style="margin:0;font-size:clamp(28px,min(4vw,5.6vh),54px);line-height:1.12;font-weight:600;letter-spacing:-0.035em;text-wrap:pretty">
+    <sc-for list="{{ aboutWords }}" as="w" hint-placeholder-count="30"><span data-w="1" style="color:var(--fg);opacity:.18;display:inline-block;white-space:pre">{{ w }} </span></sc-for>
+  </p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px">
+    <sc-for list="{{ focus }}" as="f" hint-placeholder-count="3">
+      <div data-st="1"><div data-tilt="1" style="height:100%;box-sizing:border-box;padding:26px 26px;border-radius:26px;background:var(--glass);border:1px solid var(--gb);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);box-shadow:0 20px 50px -30px var(--shadow);display:flex;flex-direction:column;gap:10px;will-change:transform">
+        <span style="font-size:13px;color:var(--mut);font-weight:500">{{ f.n }}</span>
+        <span style="font-size:26px;font-weight:700;letter-spacing:-0.03em;line-height:1.05">{{ f.t }}</span>
+        <span style="font-size:16px;line-height:1.5;color:var(--mut2)">{{ f.d }}</span>
+      </div></div>
+    </sc-for>
+  </div>
+  <div data-st="1" style="display:flex;gap:22px;align-items:center;justify-content:center;font-size:17px;flex-wrap:wrap"><button onClick="{{ goContact }}" style="font:inherit;cursor:pointer;border:none;background:var(--fg);color:var(--bg);padding:13px 24px;border-radius:999px;font-weight:500">Get in touch</button><a href="assets/resume.pdf" download="Viktor_Blais_Resume.pdf" style="color:var(--acc)">Download résumé ›</a></div>
+</section>
+
+<section data-sec="2" data-screen-label="Skills" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:safe center;text-align:center;padding:100px 24px 92px;box-sizing:border-box;gap:clamp(18px,3.4vh,34px);overflow:auto;opacity:{{ v2.o }};transform:{{ v2.tf }};filter:blur({{ v2.b }}px);pointer-events:{{ v2.pe }};transition:opacity .7s,transform 1s cubic-bezier(.2,.8,.2,1),filter .7s">
+    <h2 data-st="1" style="margin:0;font-size:clamp(48px,min(7vw,10vh),96px);font-weight:700;letter-spacing:-0.05em;line-height:.95">The toolkit.</h2>
+  <div data-st="1"><div ref="{{ segRef }}" style="position:relative;display:flex;padding:5px;border-radius:999px;background:var(--glass);border:1px solid var(--gb);backdrop-filter:blur(20px) saturate(1.5);-webkit-backdrop-filter:blur(20px) saturate(1.5);flex-wrap:wrap;justify-content:center">
+    <div ref="{{ segPill }}" style="position:absolute;top:5px;left:0;border-radius:999px;background:var(--fg);transition:transform .6s cubic-bezier(.3,1.25,.4,1),width .6s cubic-bezier(.3,1.25,.4,1);box-shadow:0 6px 18px -8px var(--shadow)"></div>
+    <sc-for list="{{ cats }}" as="c" hint-placeholder-count="5"><button data-seg="{{ c.i }}" onClick="{{ c.pick }}" style="position:relative;z-index:1;font:inherit;font-size:15px;font-weight:500;cursor:pointer;border:none;background:transparent;padding:10px 20px;border-radius:999px;color:{{ c.color }};transition:color .4s">{{ c.name }}</button></sc-for>
+  </div></div>
+  <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:960px;min-height:150px;align-content:flex-start;flex:none">
+    <sc-for list="{{ skills }}" as="s" hint-placeholder-count="12"><span style="font-size:clamp(17px,min(2vw,2.6vh),26px);font-weight:600;letter-spacing:-0.025em;padding:12px 22px;border-radius:999px;background:var(--glass);border:1px solid var(--gb);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);transform:translateY({{ s.y }}px) scale({{ s.sc }});opacity:{{ s.o }};filter:blur({{ s.b }}px);transition:transform .7s cubic-bezier(.2,.9,.25,1.15) {{ s.d }}ms,opacity .5s {{ s.d }}ms,filter .5s {{ s.d }}ms,background .3s" style-hover="background:var(--glass2)">{{ s.n }}</span></sc-for>
+  </div>
+  <span style="font-size:14px;color:var(--mut)">{{ skillCount }}</span>
+</section>
+
+<section data-sec="3" data-screen-label="Work" style="position:absolute;inset:0;display:flex;align-items:safe center;padding:96px max(24px,calc((100vw - 1240px)/2)) 92px;box-sizing:border-box;overflow:auto;opacity:{{ v3.o }};transform:{{ v3.tf }};filter:blur({{ v3.b }}px);pointer-events:{{ v3.pe }};transition:opacity .7s,transform 1s cubic-bezier(.2,.8,.2,1),filter .7s">
+  <div style="width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:clamp(24px,3.5vw,44px);align-items:center">
+    <div style="display:flex;flex-direction:column">
+      <h2 data-st="1" style="margin:0 0 22px;font-size:clamp(40px,min(5vw,7vh),68px);font-weight:700;letter-spacing:-0.05em;line-height:.95">Things I've shipped.</h2>
+      <sc-for list="{{ projects }}" as="p" hint-placeholder-count="5">
+        <div data-st="1"><div onClick="{{ p.pick }}" style="cursor:pointer;padding:clamp(12px,1.9vh,20px) 0;border-top:1px solid var(--line);display:flex;flex-direction:column">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px"><span style="font-size:clamp(24px,min(2.6vw,3.8vh),36px);font-weight:700;letter-spacing:-0.04em;color:{{ p.tc }};transition:color .5s">{{ p.t }}</span><span style="font-size:13px;color:var(--mut);white-space:nowrap">{{ p.k }}</span></div>
+          <div style="display:grid;grid-template-rows:{{ p.rows }};transition:grid-template-rows .7s cubic-bezier(.2,.8,.2,1)"><div style="overflow:hidden;min-height:0">
+            <div style="display:flex;flex-direction:column;gap:12px;padding-top:12px;opacity:{{ p.o }};transform:translateY({{ p.y }}px);transition:opacity .6s .1s,transform .7s .1s cubic-bezier(.2,.8,.2,1)">
+              <p style="margin:0;font-size:16px;line-height:1.5;color:var(--mut2);text-wrap:pretty">{{ p.d }}</p>
+              <div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ p.tags }}" as="tg"><span style="font-size:12.5px;padding:4px 10px;border-radius:999px;background:var(--glass);border:1px solid var(--gb)">{{ tg }}</span></sc-for></div>
+              <div style="display:flex;gap:22px;font-size:15.5px"><sc-for list="{{ p.links }}" as="l"><a href="{{ l.h }}" target="_blank" style="color:var(--acc)">{{ l.t }} ›</a></sc-for></div>
+            </div>
+          </div></div>
+          <div style="height:2px;margin-top:12px;border-radius:2px;background:var(--line);overflow:hidden;opacity:{{ p.barOp }};transition:opacity .4s"><div data-prog="{{ p.i }}" style="height:100%;width:0;background:var(--fg)"></div></div>
+        </div></div>
+      </sc-for>
+    </div>
+
+    <div data-st="1"><div style="position:relative;height:min(600px,calc(100vh - 210px));min-height:400px;border-radius:36px;background:var(--glass);border:1px solid var(--gb);backdrop-filter:blur(30px) saturate(1.5);-webkit-backdrop-filter:blur(30px) saturate(1.5);box-shadow:0 40px 90px -50px var(--shadow);overflow:hidden">
+
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;perspective:1400px;opacity:{{ s0.o }};transform:translateY({{ s0.y }}px) scale({{ s0.s }});filter:blur({{ s0.b }}px);pointer-events:{{ s0.pe }};transition:opacity .8s,transform .9s cubic-bezier(.2,.8,.2,1),filter .8s">
+        <div ref="{{ phoneWrap }}" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;perspective:1400px"><div ref="{{ phoneScale }}" style="transform-origin:center"><div ref="{{ phoneRef }}" style="width:250px;height:520px;border-radius:48px;background:linear-gradient(145deg,#3a3a3c,#1c1c1e);padding:10px;box-sizing:border-box;box-shadow:0 0 0 1px #48484a,0 50px 100px -30px rgba(80,90,200,.45);will-change:transform">
+          <div style="width:100%;height:100%;border-radius:39px;background:#0b0b0d;color:#f5f5f7;overflow:hidden;display:flex;flex-direction:column;padding:52px 18px 0;box-sizing:border-box;gap:18px;position:relative">
+            <div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:88px;height:26px;border-radius:20px;background:#000"></div>
+            <div style="position:absolute;left:8px;right:8px;top:{{ notifTop }}px;z-index:4;background:rgba(50,50,54,.92);border-radius:18px;padding:10px 12px;display:flex;gap:10px;align-items:center;transition:top .7s cubic-bezier(.3,1.3,.5,1)"><img src="assets/vektor.jpg" alt="" style="width:30px;height:30px;border-radius:8px;object-fit:cover"><div style="display:flex;flex-direction:column;font-size:11.5px;line-height:1.3"><b>Vektor</b><span style="opacity:.75">You said you're a runner. Prove it tonight.</span></div></div>
+            <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:#86868b">Tuesday</span><span style="font-size:23px;font-weight:700;letter-spacing:-0.03em;line-height:1.1">I am someone who shows up.</span></div>
+            <div style="align-self:center;position:relative;width:150px;height:150px">
+              <svg width="150" height="150" viewBox="0 0 160 160"><defs><linearGradient id="vg4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a78bfa"></stop><stop offset="1" stop-color="#5eead4"></stop></linearGradient></defs><circle cx="80" cy="80" r="67" fill="none" stroke="#1c1c1e" stroke-width="13"></circle><circle cx="80" cy="80" r="67" fill="none" stroke="url(#vg4)" stroke-width="13" stroke-linecap="round" stroke-dasharray="421" stroke-dashoffset="{{ ring }}" transform="rotate(-90 80 80)" style="transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1)"></circle></svg>
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:36px;font-weight:700;letter-spacing:-0.04em">{{ ringPct }}</span><span style="font-size:12px;color:#86868b">of today</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <sc-for list="{{ habits }}" as="h" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #1c1c1e;font-size:15px"><span style="color:{{ h.c }};transition:color .5s">{{ h.t }}</span><span style="width:22px;height:22px;border-radius:50%;background:{{ h.bg }};border:1.5px solid {{ h.b }};transform:scale({{ h.s }});transition:all .5s cubic-bezier(.3,1.6,.5,1)"></span></div></sc-for>
+            </div>
+          </div>
+        </div></div></div>
+      </div>
+
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:36px;opacity:{{ s1.o }};transform:translateY({{ s1.y }}px) scale({{ s1.s }});filter:blur({{ s1.b }}px);pointer-events:{{ s1.pe }};transition:opacity .8s,transform .9s cubic-bezier(.2,.8,.2,1),filter .8s">
+        <div style="width:100%;border-radius:16px;overflow:hidden;background:var(--card);box-shadow:0 0 0 1px var(--line),0 40px 80px -40px var(--shadow)">
+          <div style="height:34px;display:flex;align-items:center;gap:7px;padding:0 14px;border-bottom:1px solid var(--line)"><span style="width:11px;height:11px;border-radius:50%;background:#ff5f57"></span><span style="width:11px;height:11px;border-radius:50%;background:#febc2e"></span><span style="width:11px;height:11px;border-radius:50%;background:#28c840"></span><span style="margin:0 auto;font-size:12px;color:var(--mut)">folio-prep.com</span></div>
+          <div style="height:min(360px,calc(100vh - 330px));min-height:240px;overflow:hidden;position:relative"><img ref="{{ folioImg }}" src="assets/folioprep.jpg" alt="FolioPrep" style="width:100%;display:block;will-change:transform"><div ref="{{ sheenRef }}" style="position:absolute;top:0;bottom:0;left:0;width:220px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);will-change:transform"></div></div>
+        </div>
+      </div>
+
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:40px;gap:14px;opacity:{{ s2.o }};transform:translateY({{ s2.y }}px) scale({{ s2.s }});filter:blur({{ s2.b }}px);pointer-events:{{ s2.pe }};transition:opacity .8s,transform .9s cubic-bezier(.2,.8,.2,1),filter .8s">
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--mut);padding-bottom:12px;border-bottom:1px solid var(--line)"><span>CPSC 110 · Office hours</span><span style="color:#34c759">● TaPRO online</span></div>
+        <div style="display:flex;flex-direction:column;gap:12px;min-height:280px">
+          <sc-if value="{{ showQ }}" hint-placeholder-val="{{ true }}"><div style="align-self:flex-end;max-width:78%;background:var(--acc);color:#fff;padding:13px 17px;border-radius:22px 22px 6px 22px;font-size:16px;line-height:1.45">Why does my recursion never hit the base case?</div></sc-if>
+          <sc-if value="{{ showTyping }}"><div style="align-self:flex-start;display:flex;gap:5px;padding:15px 17px;border-radius:22px;background:var(--card);box-shadow:0 0 0 1px var(--line)"><span style="width:7px;height:7px;border-radius:50%;background:var(--mut);animation:dot 1s infinite"></span><span style="width:7px;height:7px;border-radius:50%;background:var(--mut);animation:dot 1s .2s infinite"></span><span style="width:7px;height:7px;border-radius:50%;background:var(--mut);animation:dot 1s .4s infinite"></span></div></sc-if>
+          <sc-if value="{{ showA }}"><div style="align-self:flex-start;max-width:86%;background:var(--card);box-shadow:0 0 0 1px var(--line);padding:13px 17px;border-radius:22px 22px 22px 6px;font-size:16px;line-height:1.5">{{ aText }}</div></sc-if>
+        </div>
+      </div>
+
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:44px;gap:22px;opacity:{{ s3.o }};transform:translateY({{ s3.y }}px) scale({{ s3.s }});filter:blur({{ s3.b }}px);pointer-events:{{ s3.pe }};transition:opacity .8s,transform .9s cubic-bezier(.2,.8,.2,1),filter .8s">
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:24px;font-weight:700;letter-spacing:-0.03em">In-demand skills</span><span style="font-size:13px;color:var(--mut)">{{ jmWeek }}</span></div>
+        <div style="position:relative;height:{{ jmH }}px">
+          <sc-for list="{{ jm }}" as="r" hint-placeholder-count="6"><div style="position:absolute;left:0;right:0;top:{{ r.top }}px;height:40px;display:grid;grid-template-columns:90px minmax(0,1fr) 46px;gap:14px;align-items:center;font-size:15px;transition:top .9s cubic-bezier(.3,1.25,.4,1)"><span style="font-weight:600">{{ r.n }}</span><div style="height:12px;border-radius:99px;background:var(--line);overflow:hidden"><div style="height:100%;width:{{ r.v }}%;border-radius:99px;background:{{ r.c }};transition:width .9s cubic-bezier(.3,1.2,.4,1)"></div></div><span style="text-align:right;color:var(--mut)">{{ r.v }}%</span></div></sc-for>
+        </div>
+      </div>
+
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:44px;gap:16px;opacity:{{ s4.o }};transform:translateY({{ s4.y }}px) scale({{ s4.s }});filter:blur({{ s4.b }}px);pointer-events:{{ s4.pe }};transition:opacity .8s,transform .9s cubic-bezier(.2,.8,.2,1),filter .8s">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end"><div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:var(--mut)">VAN vs EDM · Win probability</span><span ref="{{ nhlNum }}" style="font-size:56px;font-weight:700;letter-spacing:-0.05em;line-height:1">50%</span></div><span ref="{{ nhlPer }}" style="font-size:13px;color:var(--mut)">P1</span></div>
+        <canvas ref="{{ nhlRef }}" style="width:100%;height:240px;display:block"></canvas>
+      </div>
+    </div></div>
+  </div>
+</section>
+
+<section data-sec="4" data-screen-label="Contact" style="position:absolute;inset:0;display:flex;align-items:safe center;padding:96px max(24px,calc((100vw - 1140px)/2)) 92px;box-sizing:border-box;overflow:auto;opacity:{{ v4.o }};transform:{{ v4.tf }};filter:blur({{ v4.b }}px);pointer-events:{{ v4.pe }};transition:opacity .7s,transform 1s cubic-bezier(.2,.8,.2,1),filter .7s">
+  <div style="width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:56px;align-items:center">
+    <div style="display:flex;flex-direction:column;gap:22px">
+            <h2 data-st="1" style="margin:0;font-size:clamp(52px,min(7vw,10vh),104px);font-weight:700;letter-spacing:-0.055em;line-height:.95">Let's build<br>something.</h2>
+      <p data-st="1" style="margin:0;font-size:20px;color:var(--mut2);max-width:460px;line-height:1.45">An internship, a collaboration, or just a question. I'll get back to you.</p>
+      <div data-st="1" style="display:flex;flex-direction:column;font-size:16px">
+        <a href="mailto:viktor.blais.tech@gmail.com" style="display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-top:1px solid var(--line);transition:color .25s,padding .35s cubic-bezier(.2,.8,.2,1)" style-hover="color:var(--acc);padding-left:8px"><span style="color:var(--mut)">Email</span>viktor.blais.tech@gmail.com</a>
+        <a href="tel:+17073646441" style="display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-top:1px solid var(--line);transition:color .25s,padding .35s cubic-bezier(.2,.8,.2,1)" style-hover="color:var(--acc);padding-left:8px"><span style="color:var(--mut)">Phone</span>+1 (707) 364-6441</a>
+        <div style="display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-top:1px solid var(--line)"><span style="color:var(--mut)">Location</span>Vancouver, BC</div>
+        <div style="display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><span style="color:var(--mut)">Elsewhere</span><span style="display:flex;gap:18px"><a href="https://github.com/vblais12" target="_blank" style="color:var(--acc)">GitHub ›</a><a href="https://linkedin.com/in/viktor-blais-a957a2378" target="_blank" style="color:var(--acc)">LinkedIn ›</a></span></div>
+      </div>
+    </div>
+    <div data-st="1"><div style="padding:clamp(22px,3vw,32px);border-radius:32px;background:var(--glass);border:1px solid var(--gb);backdrop-filter:blur(30px) saturate(1.5);-webkit-backdrop-filter:blur(30px) saturate(1.5);box-shadow:0 40px 90px -50px var(--shadow)">
+      <sc-if value="{{ notSent }}" hint-placeholder-val="{{ true }}">
+        <form onSubmit="{{ submit }}" style="display:flex;flex-direction:column;gap:12px">
+          <input required="required" name="name" placeholder="Name" style="font:inherit;font-size:17px;color:var(--fg);background:var(--glass2);border:1px solid var(--line);border-radius:16px;padding:15px 18px;outline:none;transition:border-color .3s,box-shadow .3s" style-focus="border-color:var(--acc);box-shadow:0 0 0 4px rgba(0,113,227,.15)">
+          <input required="required" type="email" name="email" placeholder="Email" style="font:inherit;font-size:17px;color:var(--fg);background:var(--glass2);border:1px solid var(--line);border-radius:16px;padding:15px 18px;outline:none;transition:border-color .3s,box-shadow .3s" style-focus="border-color:var(--acc);box-shadow:0 0 0 4px rgba(0,113,227,.15)">
+          <textarea required="required" name="message" rows="5" placeholder="Hi Viktor, I'd like to talk about…" style="font:inherit;font-size:17px;color:var(--fg);background:var(--glass2);border:1px solid var(--line);border-radius:16px;padding:15px 18px;outline:none;resize:none;transition:border-color .3s,box-shadow .3s" style-focus="border-color:var(--acc);box-shadow:0 0 0 4px rgba(0,113,227,.15)"></textarea>
+          <button type="submit" style="font:inherit;font-size:17px;font-weight:500;cursor:pointer;border:none;border-radius:999px;padding:16px;background:var(--acc);color:#fff;transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .3s;opacity:{{ btnOp }}" style-hover="transform:scale(1.015)">{{ btnLabel }}</button>
+        </form>
+      </sc-if>
+      <sc-if value="{{ sent }}">
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:50px 10px">
+          <span style="width:64px;height:64px;border-radius:50%;background:#34c759;color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700">✓</span>
+          <span style="font-size:34px;font-weight:700;letter-spacing:-0.04em">Message sent.</span>
+          <span style="font-size:17px;color:var(--mut2)">Thanks for reaching out. I'll get back to you shortly.</span>
+          <button onClick="{{ reset }}" style="margin-top:6px;font:inherit;font-size:16px;cursor:pointer;border:none;background:transparent;color:var(--acc)">Send another ›</button>
+        </div>
+      </sc-if>
+    </div></div>
+  </div>
+</section>
+</div>

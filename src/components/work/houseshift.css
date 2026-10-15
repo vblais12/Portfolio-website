@@ -1,0 +1,75 @@
+/* HouseShift demo screen, ported from the app's portfolio screen template (393x852pt).
+   Everything is scoped under .hs; the screen is rendered at native size and scaled into the phone. */
+.hs {
+  --bg: #f7efdf; --surface: #fdf8ed; --ink: #1c1712;
+  --muted: #5c5142; --muted2: #6b5f4c; --accent: #d97a22; --accentDark: #9a5510;
+  --soft: #f6dfae; --teal: #1f5e5b; --red: #c9452c; --cream: #fdf3e7; --bandSub: #bfd4d2;
+  --iconMuted: #7d6f5b; --border2: #e7dac0; --border3: #c4b292; --choreTile: #cddcd9;
+  --quiet: #fbf4e5; --good: #cfe0c6; --low: #f6c650;
+  --display: "Bricolage Grotesque", sans-serif; --body: "Hanken Grotesk", sans-serif;
+
+  position: absolute; left: 0; top: 0; width: 393px; height: 852px; transform-origin: 0 0;
+  display: flex; flex-direction: column; overflow: hidden;
+  background: var(--bg); color: var(--ink); font-family: var(--body); line-height: normal;
+}
+.hs .i { width: 1em; height: 1em; display: block; fill: none; }
+
+.hs .eyebrow { font: 800 11.5px/1 var(--body); letter-spacing: .13em; text-transform: uppercase; color: var(--muted2); }
+.hs .band { background: var(--teal); border-bottom: 2.5px solid var(--ink); padding: 69px 20px 20px; display: flex; align-items: flex-end; gap: 12px; flex: none; }
+.hs .band .eyebrow { color: var(--bandSub); margin-bottom: 7px; letter-spacing: .14em; }
+.hs .tab-title { font: 800 32px/1.08 var(--display); letter-spacing: -.035em; color: var(--cream); }
+.hs .cart { margin-left: auto; position: relative; width: 46px; height: 46px; border-radius: 14px; background: var(--accent); border: 2.5px solid var(--ink); display: grid; place-items: center; font-size: 22px; flex: none; }
+.hs .cart .count { position: absolute; top: -8px; right: -8px; min-width: 22px; height: 22px; border-radius: 99px; background: var(--cream); border: 2px solid var(--ink); font: 800 11.5px/18px var(--body); text-align: center; padding: 0 5px; }
+.hs .scroll { flex: 1; padding: 18px 20px 0; display: flex; flex-direction: column; gap: 18px; overflow: hidden; }
+.hs .sec-head { display: flex; justify-content: space-between; align-items: baseline; }
+.hs .sec-head h3 { margin: 0; font: 800 19px/1.2 var(--display); letter-spacing: -.02em; }
+.hs .sec-head span { font: 800 10px/1 var(--body); letter-spacing: .07em; color: var(--muted2); text-transform: uppercase; }
+.hs .card { background: var(--surface); border: 2.5px solid var(--ink); border-radius: 16px; overflow: hidden; }
+.hs .att-top { display: flex; align-items: center; gap: 12px; padding: 14px; }
+.hs .att-top .t { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.hs .att-title { font: 700 18px/1.2 var(--body); letter-spacing: -.01em; }
+.hs .sub { font: 600 13.5px/1.3 var(--body); color: var(--muted2); }
+.hs .sub-sm { font: 600 12.5px/1.3 var(--body); color: var(--muted2); }
+.hs .att-actions { display: flex; gap: 10px; padding: 0 14px 14px; }
+.hs .act { height: 46px; border-radius: 14px; border: 2.5px solid var(--ink); display: grid; place-items: center; font: 800 15.5px/1 var(--body); }
+.hs .act.primary { flex: 1; background: var(--accent); transition: transform .12s ease-out; }
+.hs .act.secondary { padding: 0 18px; background: var(--surface); }
+.hs .tile { display: grid; place-items: center; border: 2px solid var(--ink); flex: none; }
+.hs .tile.chore { background: var(--choreTile); }
+.hs .tile.quiet { background: transparent; border: 1.5px solid var(--border3); color: var(--iconMuted); }
+.hs .t44 { width: 44px; height: 44px; border-radius: 12px; font-size: 24px; }
+.hs .t34 { width: 34px; height: 34px; border-radius: 10px; font-size: 19px; }
+.hs .badge { display: inline-flex; align-items: center; height: 27px; padding: 0 11px; border: 2.5px solid var(--ink); border-radius: 9px; font: 800 11.5px/1 var(--body); letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; flex: none; background: var(--low); }
+.hs .quiet-list { background: var(--quiet); border: 2px solid var(--border2); border-radius: 16px; }
+.hs .qrow { display: flex; align-items: center; gap: 12px; padding: 13px 14px; }
+.hs .qrow + .qrow { border-top: 1.5px solid var(--border2); }
+.hs .qrow .t { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.hs .qname { font: 600 16px/1.2 var(--body); }
+.hs .av { display: grid; place-items: center; border-radius: 99px; border: 2px solid var(--ink); color: var(--cream); font-weight: 800; flex: none; }
+.hs .av26 { width: 26px; height: 26px; font-size: 11px; }
+.hs .av28 { width: 28px; height: 28px; font-size: 12px; }
+.hs .V { background: #d97a22; } .hs .J { background: #1f5e5b; } .hs .M { background: #c9452c; } .hs .S { background: #3f5f8a; }
+.hs .tabbar { background: var(--surface); border-top: 2.5px solid var(--ink); padding: 9px 10px 42px; display: flex; flex: none; }
+.hs .tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; font: 600 11px/1 var(--body); color: var(--muted2); }
+.hs .tab .chip { width: 44px; height: 32px; border-radius: 11px; display: grid; place-items: center; font-size: 21px; }
+.hs .tab.on { color: var(--accentDark); font-weight: 800; }
+.hs .tab.on .chip { background: var(--teal); border: 2.5px solid var(--ink); color: var(--cream); }
+.hs .rowsub { font: 600 13.5px/1.4 var(--body); }
+
+/* Caught-up state */
+.hs .caught { display: flex; flex-direction: column; gap: 12px; }
+.hs .caught .sub { text-align: center; }
+
+/* Success moment */
+.hs .scrim { position: absolute; inset: 0; background: rgba(28, 23, 18, .34); z-index: 30; display: grid; place-items: center; transition: opacity .19s; }
+.hs .success { width: 300px; background: var(--bg); border: 2.5px solid var(--ink); border-radius: 22px; padding: 26px 22px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.hs .ring { width: 78px; height: 78px; border-radius: 99px; background: var(--good); border: 2.5px solid var(--ink); display: grid; place-items: center; }
+.hs .success h2 { margin: 0; font: 800 24px/1.15 var(--display); letter-spacing: -.03em; text-align: center; }
+.hs .success p { margin: 6px 0 0; font: 400 14.5px/1.45 var(--body); color: var(--muted); text-align: center; }
+.hs .handoff { display: flex; align-items: center; gap: 9px; padding: 7px 12px; background: var(--surface); border: 2px solid var(--ink); border-radius: 999px; }
+
+/* Blocks swapping between "1 thing" and "caught up" ease in */
+.hs .swap-in { animation: hs-swap-in .35s ease-out; }
+@keyframes hs-swap-in {
+  from { opacity: 0; transform: translateY(6px); }
+}

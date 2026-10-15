@@ -1,0 +1,47 @@
+/* Sorn Deep Block demo, laid out at the app's native 393x852pt from the Deep Block screen.
+   Everything is scoped under .sorn; the screen is scaled into the phone. */
+.sorn {
+  --ink: #f4f4f1; --inkBright: #ededea; --secondary: #b5b5b0; --soft: #d5d5d0;
+  --muted: #8c8c88; --dim: #6e6e6a; --line: #2a2a2a; --skip: #4a4a47;
+  --glass-fill: linear-gradient(180deg, rgba(255, 255, 255, .075), rgba(255, 255, 255, .02));
+  --glass-border: 1px solid rgba(255, 255, 255, .14);
+  --display: "Geist", sans-serif; --mono: "Geist Mono", ui-monospace, monospace;
+
+  position: absolute; left: 0; top: 0; width: 393px; height: 852px; transform-origin: 0 0;
+  overflow: hidden; background: #000; color: var(--ink); font-family: var(--display); line-height: normal;
+}
+.sorn .layer { position: absolute; inset: 0; transition: opacity .45s; }
+.sorn .glow { position: absolute; left: 50%; top: 339px; width: 600px; height: 600px; margin: -300px 0 0 -300px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, .09), rgba(255, 255, 255, .03) 34%, rgba(255, 255, 255, 0) 64%); }
+
+.sorn .mono { font: 500 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+
+/* Hourglass card */
+.sorn .glass-card { position: absolute; left: 71.5px; top: 194px; width: 251px; height: 290px; border-radius: 32px;
+  background: radial-gradient(circle at 50% 42%, #1f1f1f, #0e0e0e 78%); border: 1px solid #262626;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 24px 48px rgba(0, 0, 0, .35); transition: transform .2s ease-out; }
+.sorn .hourglass { position: absolute; left: 62.5px; top: 26px; }
+.sorn .stream { animation: sorn-fall .45s linear infinite; }
+@keyframes sorn-fall {
+  from { stroke-dashoffset: 7; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* Digit cards: glass, darker lower half like a split-flap, but digits change in place */
+.sorn .digit { position: absolute; top: 499px; width: 120px; height: 131px; border-radius: 30px; overflow: hidden;
+  background: linear-gradient(180deg, #1c1c1c 0 50%, #0d0d0d 50% 100%); border: var(--glass-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08); }
+.sorn .digit .mono { position: absolute; left: 14px; top: 16px; font-size: 9.5px; }
+.sorn .digit .num { position: absolute; inset: 0; display: grid; place-items: center; padding-top: 8px;
+  font: 800 88px/1 var(--display); letter-spacing: -.05em; font-variant-numeric: tabular-nums; color: var(--inkBright); }
+
+/* Hold-to-end ring and finger press */
+.sorn .ring { position: absolute; left: 0; top: 0; pointer-events: none; }
+.sorn .press { position: absolute; left: 168.5px; top: 311px; width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(255, 255, 255, .16); border: 1px solid rgba(255, 255, 255, .35); transition: opacity .2s, transform .25s ease-out; }
+
+/* Reflection */
+.sorn .timer-pill { display: inline-flex; align-items: center; gap: 9px; height: 34px; padding: 0 14px; border-radius: 99px;
+  background: var(--glass-fill); border: var(--glass-border); font: 500 15px/1 var(--mono); color: var(--inkBright);
+  font-variant-numeric: tabular-nums; }
+.sorn .question { margin: 0; font: 800 34px/1.02 var(--display); letter-spacing: -.055em; text-align: center; }
