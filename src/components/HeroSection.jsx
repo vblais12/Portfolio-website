@@ -261,7 +261,7 @@ export const HeroSection = () => {
             </p>
 
             <p data-st className="relative z-2 m-0 text-[clamp(16px,2.1vh,19px)] leading-[1.45] text-mut2">
-                Computer Science + Math at UBC, based in Vancouver
+                Computer Science + Math @ UBC, based in Vancouver
             </p>
 
             <div data-st className="relative z-2 flex gap-[22px] items-center mt-2 text-[17px] flex-wrap justify-center">
