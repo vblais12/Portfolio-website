@@ -3,13 +3,13 @@ import { Section } from "@/components/Section"
 import { useFrame } from "@/lib/frameLoop"
 import { EASE, hasPointer, useStage } from "@/lib/stage"
 
-const NAME = "Viktor Blais."
+const NAME = "Viktor Blais"
 const NAME_WORDS = NAME.split(/(?<= )/).map((word, w, all) => ({
     chars: word.split(""),
     start: all.slice(0, w).join("").length,
 }))
-const ROTATING = ["learns.", "ships.", "scales.", "predicts."]
-const ORBIT = ["Python", "PyTorch", "React", "TypeScript", "AWS", "C++", "Supabase", "Next.js", "PostgreSQL", "TensorFlow"]
+const ROTATING = ["learns", "ships", "scales", "predicts"]
+const ORBIT = ["React", "JavaScript", "SQL", "React Native", "Expo", "Python", "PyTorch", "React", "TypeScript", "AWS", "C++", "Supabase", "Next.js", "PostgreSQL", "TensorFlow"]
 const BUBBLES = [
     { x: 9, y: 18, size: 110, depth: 1.4 },
     { x: 85, y: 60, size: 140, depth: 0.9 },
@@ -190,7 +190,7 @@ export const HeroSection = () => {
             <div data-st className="relative z-2">
                 <span className="text-[14px] font-medium py-[7px] px-3.5 rounded-full glass backdrop-blur-[12px] flex gap-2 items-center">
                     <span className="w-[7px] h-[7px] rounded-full bg-[#34c759] animate-dot" />
-                    Open to internships · Fall 2026
+                    Open to internships · Spring 2027
                 </span>
             </div>
 
@@ -261,7 +261,7 @@ export const HeroSection = () => {
             </p>
 
             <p data-st className="relative z-2 m-0 text-[clamp(16px,2.1vh,19px)] leading-[1.45] text-mut2">
-                Computer Science + Math at UBC, based in Vancouver.
+                Computer Science + Math at UBC, based in Vancouver
             </p>
 
             <div data-st className="relative z-2 flex gap-[22px] items-center mt-2 text-[17px] flex-wrap justify-center">
